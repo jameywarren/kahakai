@@ -796,6 +796,49 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
   text-transform:uppercase;
   font-weight:500;
 }
+.foot-motto{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--ghost);
+  letter-spacing:0.08em;
+  margin-top:5px;
+  cursor:pointer;
+  display:inline-flex;
+  flex-direction:column;
+  gap:0;
+  user-select:none;
+}
+.foot-motto-line1{
+  position:relative;
+  display:inline-block;
+  transition:color 0.2s;
+}
+.foot-motto-line1::after{
+  content:'';
+  position:absolute;
+  left:0;right:0;
+  top:50%;
+  height:1px;
+  background:currentColor;
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform 0.25s ease;
+}
+.foot-motto:hover .foot-motto-line1::after{transform:scaleX(1)}
+.foot-motto-line2{
+  color:var(--rust);
+  opacity:0;
+  transition:opacity 0.25s ease;
+  display:block;
+  margin-top:2px;
+}
+.foot-motto:hover .foot-motto-line2{opacity:1}
+@keyframes motto-pulse{
+  0%{transform:scale(1);color:var(--ghost)}
+  50%{transform:scale(1.05);color:var(--rust)}
+  100%{transform:scale(1);color:var(--ghost)}
+}
+.foot-motto.pulsed{animation:motto-pulse 0.35s ease forwards}
 
 /* ========== RESPONSIVE ========== */
 @media (max-width:860px){
@@ -1066,7 +1109,13 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
 <footer>
   <div class="container foot">
     <div class="foot-left">
-      <a href="#" class="wm foot-wm">kahakai</a>
+      <div style="display:flex;flex-direction:column;gap:0">
+        <a href="#" class="wm foot-wm">kahakai</a>
+        <span class="foot-motto">
+          <span class="foot-motto-line1">don't be a tool.</span>
+          <span class="foot-motto-line2">be the founder.</span>
+        </span>
+      </div>
       <span class="foot-meta">Livingston, MT</span>
     </div>
     <div class="foot-meta">hello@kahak.ai · © 2026</div>
@@ -1090,6 +1139,33 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
     });
   }, { threshold: 0.3 });
   rows.forEach(r => io.observe(r));
+})();
+</script>
+
+<script>
+(function(){
+  const motto = document.querySelector('.foot-motto');
+  if(!motto) return;
+  motto.addEventListener('click', function(){
+    console.log(
+      '%cnice. you found the motto.',
+      'font-size:18px;font-weight:600;line-height:1.4'
+    );
+    console.log(
+      '%cif you\'re reading this, you\'re probably the kind of person we built kahakai for.',
+      'font-size:14px;font-weight:400;margin-top:4px;line-height:1.5'
+    );
+    console.log(
+      '%cemail jamey@kahak.ai with subject line "tool" and we\'ll send you something good.',
+      'font-family:monospace;font-size:13px;color:#9a4a2e'
+    );
+    motto.classList.remove('pulsed');
+    void motto.offsetWidth;
+    motto.classList.add('pulsed');
+    motto.addEventListener('animationend', function(){
+      motto.classList.remove('pulsed');
+    }, {once:true});
+  });
 })();
 </script>
 
