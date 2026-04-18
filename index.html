@@ -833,12 +833,6 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
   margin-top:2px;
 }
 .foot-motto:hover .foot-motto-line2{opacity:1}
-@keyframes motto-pulse{
-  0%{transform:scale(1);color:#6b6258}
-  50%{transform:scale(1.05);color:#9a4a2e}
-  100%{transform:scale(1);color:#6b6258}
-}
-.foot-motto.pulsed{animation:motto-pulse 0.35s ease forwards}
 
 /* ========== RESPONSIVE ========== */
 @media (max-width:860px){
@@ -1144,7 +1138,7 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
 
 <script>
 (function(){
-  const motto = document.querySelector('.foot-motto');
+  var motto = document.querySelector('.foot-motto');
   if(!motto) return;
   motto.addEventListener('click', function(){
     console.log(
@@ -1159,12 +1153,18 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
       '%cemail jamey@kahak.ai with subject line "tool" and we\'ll send you something good.',
       'font-family:monospace;font-size:13px;color:#9a4a2e'
     );
-    motto.classList.remove('pulsed');
-    void motto.offsetWidth;
-    motto.classList.add('pulsed');
-    motto.addEventListener('animationend', function(){
-      motto.classList.remove('pulsed');
-    }, {once:true});
+    motto.style.transition = 'transform 0.15s ease, color 0.15s ease';
+    motto.style.transform = 'scale(1.05)';
+    motto.style.color = '#9a4a2e';
+    setTimeout(function(){
+      motto.style.transform = 'scale(1)';
+      motto.style.color = '#6b6258';
+      setTimeout(function(){
+        motto.style.transition = '';
+        motto.style.transform = '';
+        motto.style.color = '';
+      }, 150);
+    }, 175);
   });
 })();
 </script>
