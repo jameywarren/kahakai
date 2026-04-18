@@ -1153,18 +1153,18 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
       '%cemail jamey@kahak.ai with subject line "tool" and we\'ll send you something good.',
       'font-family:monospace;font-size:13px;color:#9a4a2e'
     );
-    motto.style.transition = 'transform 0.15s ease, color 0.15s ease';
-    motto.style.transform = 'scale(1.05)';
-    motto.style.color = '#9a4a2e';
-    setTimeout(function(){
-      motto.style.transform = 'scale(1)';
-      motto.style.color = '#6b6258';
+    var flash = document.createElement('div');
+    flash.style.cssText = 'position:fixed;inset:0;background:#9a4a2e;z-index:9999;opacity:0;pointer-events:none;transition:opacity 0.12s ease';
+    document.body.appendChild(flash);
+    requestAnimationFrame(function(){
+      flash.style.opacity = '1';
       setTimeout(function(){
-        motto.style.transition = '';
-        motto.style.transform = '';
-        motto.style.color = '';
-      }, 150);
-    }, 175);
+        flash.style.transition = 'opacity 0.35s ease';
+        flash.style.opacity = '0';
+        window.scrollTo({top:0, behavior:'instant'});
+        setTimeout(function(){ document.body.removeChild(flash); }, 400);
+      }, 120);
+    });
   });
 })();
 </script>
