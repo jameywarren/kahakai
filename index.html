@@ -796,43 +796,6 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
   text-transform:uppercase;
   font-weight:500;
 }
-.foot-motto{
-  font-family:var(--mono);
-  font-size:10px;
-  color:var(--ghost);
-  letter-spacing:0.08em;
-  margin-top:5px;
-  cursor:pointer;
-  display:inline-flex;
-  flex-direction:column;
-  gap:0;
-  user-select:none;
-}
-.foot-motto-line1{
-  position:relative;
-  display:inline-block;
-  transition:color 0.2s;
-}
-.foot-motto-line1::after{
-  content:'';
-  position:absolute;
-  left:0;right:0;
-  top:50%;
-  height:1px;
-  background:currentColor;
-  transform:scaleX(0);
-  transform-origin:left;
-  transition:transform 0.25s ease;
-}
-.foot-motto:hover .foot-motto-line1::after{transform:scaleX(1)}
-.foot-motto-line2{
-  color:var(--rust);
-  opacity:0;
-  transition:opacity 0.25s ease;
-  display:block;
-  margin-top:2px;
-}
-.foot-motto:hover .foot-motto-line2{opacity:1}
 
 /* ========== RESPONSIVE ========== */
 @media (max-width:860px){
@@ -1104,13 +1067,7 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
 <footer>
   <div class="container foot">
     <div class="foot-left">
-      <div style="display:flex;flex-direction:column;gap:0">
-        <a href="#" class="wm foot-wm">kahakai</a>
-        <span class="foot-motto">
-          <span class="foot-motto-line1">don't be a tool.</span>
-          <span class="foot-motto-line2">be the founder.</span>
-        </span>
-      </div>
+      <a href="#" class="wm foot-wm">kahakai</a>
       <span class="foot-meta">Livingston, MT</span>
     </div>
     <div class="foot-meta">hello@kahak.ai · © 2026</div>
@@ -1137,49 +1094,6 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
 })();
 </script>
 
-<script>
-(function(){
-  var motto = document.querySelector('.foot-motto');
-  if(!motto) return;
-  motto.addEventListener('click', function(){
-    console.log(
-      '%cnice. you found the motto.',
-      'font-size:18px;font-weight:600;line-height:1.4'
-    );
-    console.log(
-      '%cif you\'re reading this, you\'re probably the kind of person we built kahakai for.',
-      'font-size:14px;font-weight:400;margin-top:4px;line-height:1.5'
-    );
-    console.log(
-      '%cemail jamey@kahak.ai with subject line "tool" and we\'ll send you something good.',
-      'font-family:monospace;font-size:13px;color:#9a4a2e'
-    );
-    var flash = document.createElement('div');
-    flash.style.cssText = 'position:fixed;inset:0;background:#9a4a2e;z-index:9999;opacity:0;pointer-events:none;transition:opacity 0.12s ease';
-    document.body.appendChild(flash);
-    requestAnimationFrame(function(){
-      flash.style.opacity = '1';
-      setTimeout(function(){
-        flash.style.transition = 'opacity 0.35s ease';
-        flash.style.opacity = '0';
-        window.scrollTo({top:0, behavior:'instant'});
-        setTimeout(function(){
-          document.body.removeChild(flash);
-          var toast = document.createElement('div');
-          toast.innerHTML = 'built with our open-source kit &rarr; <a href="https://github.com/jameywarren/claude-code-shopify-toolkit" target="_blank" rel="noopener" style="color:#9a4a2e;text-decoration:none;border-bottom:1px solid #9a4a2e">github</a>';
-          toast.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1a1814;color:#f5f1ea;font-family:monospace;font-size:12px;letter-spacing:0.06em;padding:0.6rem 1.1rem;border-radius:4px;z-index:9999;opacity:0;transition:opacity 0.3s ease;white-space:nowrap';
-          document.body.appendChild(toast);
-          requestAnimationFrame(function(){ toast.style.opacity = '1'; });
-          setTimeout(function(){
-            toast.style.opacity = '0';
-            setTimeout(function(){ document.body.removeChild(toast); }, 350);
-          }, 4000);
-        }, 400);
-      }, 120);
-    });
-  });
-})();
-</script>
 
 </body>
 </html>
