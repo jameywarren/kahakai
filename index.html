@@ -338,6 +338,17 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
   line-height:1.6;
   color:var(--ink-soft);
 }
+.gap-card-meta{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--rust);
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  font-weight:500;
+  margin-top:1.25rem;
+  padding-top:1rem;
+  border-top:1px solid var(--line);
+}
 
 /* ========== MODEL ========== */
 .model-grid{
@@ -828,7 +839,6 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
 <!-- THE HAND-OFF -->
 <section>
   <div class="container">
-    <div class="section-label">What changes</div>
     <h2 class="section-title">The work <em>gets shipped.</em></h2>
     <p class="section-body">Most agencies move slow and charge for the delay. We're built differently — AI handles the volume, we handle the craft, and projects ship in days not months.</p>
 
@@ -850,7 +860,6 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
 <!-- HOW IT WORKS -->
 <section id="how">
   <div class="container">
-    <div class="section-label">How it works</div>
     <h2 class="section-title">AI speed. <em>Human craft.</em></h2>
     <p class="section-body">AI alone ships fast and confidently wrong. Humans alone are too slow for the pace modern Shopify stores demand. We use both — and we're honest about which is doing what.</p>
 
@@ -882,40 +891,31 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
 <!-- WHAT WE TAKE ON -->
 <section>
   <div class="container">
-    <div class="section-label">What we take on</div>
     <h2 class="section-title">Four ways we work <em>with stores.</em></h2>
-    <div class="what-list">
-      <div class="what-row">
-        <span class="what-num">01</span>
-        <span class="what-from">New store or storefront,</span>
-        <span class="what-arrow">→</span>
-        <span class="what-to">Build</span>
-        <span class="what-tag">Project</span>
-        <div class="what-detail">New brand, new SKU line, new storefront. Design through launch in two to six weeks. Fast without cutting corners.</div>
+    <div class="gap-grid">
+      <div class="gap-card">
+        <div class="gap-card-tag">Project</div>
+        <div class="gap-card-title">Build</div>
+        <div class="gap-card-body">New brand, new SKU line, new storefront. We take it from brief through launch — theme design, page templates, navigation, product setup. Fast without cutting corners.</div>
+        <div class="gap-card-meta">From $8K · 2–6 weeks</div>
       </div>
-      <div class="what-row">
-        <span class="what-num">02</span>
-        <span class="what-from">Existing store, needs a refresh,</span>
-        <span class="what-arrow">→</span>
-        <span class="what-to">Redesign</span>
-        <span class="what-tag">Project</span>
-        <div class="what-detail">Theme that no longer fits the brand, pages that don't convert, a store that's grown past its original design. We rebuild it right.</div>
+      <div class="gap-card">
+        <div class="gap-card-tag">Project</div>
+        <div class="gap-card-title">Redesign</div>
+        <div class="gap-card-body">Store that's grown past its design. Theme overhaul, page rebuilds, conversion improvements. Same store, built to actually work the way it looks.</div>
+        <div class="gap-card-meta">From $6K · 2–4 weeks</div>
       </div>
-      <div class="what-row">
-        <span class="what-num">03</span>
-        <span class="what-from">Neglected and slipping,</span>
-        <span class="what-arrow">→</span>
-        <span class="what-to">Rescue</span>
-        <span class="what-tag">Project</span>
-        <div class="what-detail">Broken catalog, technical debt, a theme held together by overrides. We diagnose, clean, and hand back something that works.</div>
+      <div class="gap-card">
+        <div class="gap-card-tag">Project</div>
+        <div class="gap-card-title">Rescue</div>
+        <div class="gap-card-body">Broken catalog, technical debt, a theme held together by overrides. We diagnose what's wrong, fix it cleanly, and hand back something you can actually build on.</div>
+        <div class="gap-card-meta">Scoped · typically 2–3 weeks</div>
       </div>
-      <div class="what-row">
-        <span class="what-num">04</span>
-        <span class="what-from">Ongoing design and optimization,</span>
-        <span class="what-arrow">→</span>
-        <span class="what-to">Retainer</span>
-        <span class="what-tag">Monthly</span>
-        <div class="what-detail">Continuous design, builds, and optimization on a monthly cadence. Your store keeps improving without you managing the work.</div>
+      <div class="gap-card">
+        <div class="gap-card-tag">Monthly</div>
+        <div class="gap-card-title">Retainer</div>
+        <div class="gap-card-body">Ongoing design and builds on a monthly cadence. New pages, seasonal refreshes, optimization. Your store keeps improving without you managing the work.</div>
+        <div class="gap-card-meta">$10K/month · 30-day out</div>
       </div>
     </div>
   </div>
@@ -935,7 +935,6 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
 <!-- MEET JAMEY -->
 <section>
   <div class="container">
-    <div class="section-label">Who runs this</div>
     <div class="meet-grid">
       <div class="meet-photo" role="img" aria-label="Jamey Warren, founder of kahakai"></div>
       <div class="meet-content">
@@ -952,7 +951,6 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
 <!-- PRICING -->
 <section id="pricing">
   <div class="container">
-    <div class="section-label">Pricing</div>
     <h2 class="section-title">Clear pricing. <em>No surprises.</em></h2>
     <p class="section-body">Fixed project rates or a monthly retainer. No setup fees, no annual contracts, no scope creep.</p>
 
@@ -990,7 +988,6 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
 <!-- HONEST BLOCK -->
 <section>
   <div class="container">
-    <div class="section-label">Before you book</div>
     <div class="honest-body">
       <p>We don't run stores. We build them. If you want someone to manage your day-to-day operations, that's not us. If you want a studio that ships fast, thinks in Shopify, and doesn't need hand-holding, keep reading.</p>
       <p>We're the right fit if you have a real project — a build, a redesign, a rescue, or a store that needs to keep improving every month. <em>The call is 30 minutes.</em> We'll both know by the end.</p>
@@ -1019,25 +1016,6 @@ section{padding:6rem 0;border-bottom:1px solid var(--line)}
   </div>
 </footer>
 
-<script>
-// Scroll-reveal for the transformation rows
-(function(){
-  const rows = document.querySelectorAll('.what-row');
-  if(!('IntersectionObserver' in window)){
-    rows.forEach(r => r.classList.add('in-view'));
-    return;
-  }
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if(e.isIntersecting){
-        e.target.classList.add('in-view');
-        io.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.3 });
-  rows.forEach(r => io.observe(r));
-})();
-</script>
 
 
 </body>
