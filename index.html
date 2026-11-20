@@ -29,6 +29,8 @@
   canvas { display: block; width: 100%; height: 100%; }
   .icon { position: absolute; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(239,231,216,.28); background: rgba(23,19,14,.45); color: #efe7d8; display: grid; place-items: center; padding: 0; cursor: pointer; }
   #snd { top: max(10px, env(safe-area-inset-top, 0px)); right: max(10px, env(safe-area-inset-right, 0px)); border-color: #d2704a; box-shadow: 0 0 0 0 rgba(210,112,74,.6); animation: ask 2.2s ease-out infinite; }
+  #more { top: max(10px, env(safe-area-inset-top, 0px)); left: max(10px, env(safe-area-inset-left, 0px)); text-decoration: none; font: 600 21px/1 'Newsreader', 'Iowan Old Style', Georgia, serif; opacity: .8; }
+  #more span { display: block; padding: 0 3px 2px; border-bottom: 2px solid #d2704a; transform: translateY(-1px); }
   #snd.asked { animation: none; border-color: rgba(239,231,216,.28); }
   @keyframes ask { 0% { box-shadow: 0 0 0 0 rgba(210,112,74,.55); } 70%, 100% { box-shadow: 0 0 0 14px rgba(210,112,74,0); } }
   @media (prefers-reduced-motion: reduce) { #snd { animation: none; } #stage { transition: none; } }
@@ -54,6 +56,7 @@
 <div id="stage">
   <canvas id="c" width="783" height="1206" role="img" aria-label="A beach bar at dusk, looking out its window at the sea. A surfboard over the window reads kahakai. Two slippers on the bar flip a glass float. Tap the right or left side, or press the arrow keys, to flip. There are thirteen things to do, in any order: the life ring, the bucket, the cooler, the lantern, the surfboard and eight bulbs. When all are done the surfboard falls and takes the front wall with it, and the bar is left open on the beach."></canvas>
   <button id="snd" class="icon" aria-label="Sound is off. Turn sound on." aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h4l5-4v12l-5-4H4z"/><path id="sx" d="M17 9l5 6m0-6l-5 6"/></svg></button>
+  <a id="more" class="icon" href="/about/" aria-label="About kahakai: our games, what we promise, and how to reach us"><span>k</span></a>
   <button id="bottle" aria-label="A bottle with a note in it"></button>
   <div id="note"><a href="mailto:aloha@kahak.ai">aloha@kahak.ai</a></div>
   <button id="drink" aria-label="The drink on the bar. It is the menu." aria-expanded="false" aria-controls="menu"></button>
@@ -218,7 +221,7 @@ let swallowed = false;
 addEventListener('click', e => { if (swallowed && e.target.closest('#drink, #bottle')) { e.stopImmediatePropagation(); e.preventDefault(); } swallowed = false; }, true);
 addEventListener('pointerdown', e => { const prop = e.target.closest('#drink, #bottle'); swallowed = !!prop && flipNow(prop.id === 'drink' ? 'L' : 'R');
   if (!e.target.closest('#menu, #drink') && menu.style.display === 'block') showMenu(false);
-  if (e.target.closest('button, a, #menu, #note') && !swallowed) return;
+  if (e.target.closest('button, a, #menu, #note') && !swallowed) return;      // the k in the corner is the plain door: it leaves the game for the about page
   const r = stage.getBoundingClientRect(), ox = (e.clientX - r.left) / view.k + view.x - OX, oy = (e.clientY - r.top) / view.k + view.y - OY;
   const egg = EGGS.find(q => ox > q.x0 && ox < q.x1 && oy > q.y0 && oy < q.y1 && !(q.wall && s.phase !== 'play')); if (egg) { egg.go(); e.preventDefault(); return; }
   if (e.isPrimary && e.pointerType === 'touch') letGo(); const side = e.clientX < r.left + r.width / 2 ? 'L' : 'R'; held.set(e.pointerId, side); press(side, true); e.preventDefault(); }, { passive: false });

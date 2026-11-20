@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>About · kahakai</title>
+<meta name="description" content="Kahakai is a small game studio. Our games are fun to play and easy to put down.">
+<link rel="canonical" href="https://kahak.ai/about/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#17130e">
+<style>
+  @font-face { font-family: 'Newsreader'; font-style: normal; font-weight: 200 800; font-display: swap; src: url('/fonts/newsreader-latin.woff2') format('woff2'); }
+  @font-face { font-family: 'Geist'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/geist-latin.woff2') format('woff2'); }
+  :root { --ink: #17130e; --ink-soft: #211a13; --paper: #efe7d8; --quiet: rgba(239,231,216,.66); --line: rgba(239,231,216,.14); --copper: #d2704a; --teal: #4fa89b; --teal-soft: #68bcae; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html { background: var(--ink); }
+  body { margin: 0; color: var(--paper); font: 400 17px/1.6 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif; padding: 0 max(22px, env(safe-area-inset-right, 0px)) 72px max(22px, env(safe-area-inset-left, 0px)); }
+  main { max-width: 640px; margin: 0 auto; }
+  header { padding: 44px 0 8px; }
+  header img { width: min(300px, 76%); height: auto; display: block; margin-left: -6px; }
+  .lead { font: 400 26px/1.3 'Newsreader', Georgia, serif; letter-spacing: -.01em; margin: 26px 0 10px; text-wrap: balance; }
+  .sub { color: var(--quiet); margin: 0 0 8px; }
+  h2 { font: 500 12px/1 'Geist', system-ui, sans-serif; letter-spacing: .16em; text-transform: uppercase; color: var(--copper); margin: 46px 0 14px; padding-top: 22px; border-top: 1px solid var(--line); }
+  a { color: var(--teal-soft); text-underline-offset: 3px; }
+  .game { display: grid; grid-template-columns: 112px 1fr; gap: 16px; align-items: center; padding: 10px 0; text-decoration: none; color: inherit; }
+  .game img, .game .ph { width: 112px; height: 74px; object-fit: cover; border-radius: 4px; background: var(--ink-soft); border: 1px solid var(--line); }
+  .game b { font: 600 21px/1.2 'Newsreader', Georgia, serif; display: block; }
+  .game span { color: var(--quiet); font-size: 15.5px; }
+  .game em { font-style: normal; color: var(--teal-soft); font-size: 14px; }
+  ol { margin: 0; padding: 0; list-style: none; counter-reset: p; }
+  ol li { counter-increment: p; position: relative; padding: 9px 0 9px 34px; font: 400 19px/1.45 'Newsreader', Georgia, serif; }
+  ol li::before { content: counter(p); position: absolute; left: 0; top: 12px; font: 500 12px/1 'Geist', system-ui, sans-serif; color: var(--copper); width: 20px; height: 20px; border: 1px solid var(--line); border-radius: 50%; display: grid; place-items: center; }
+  p { margin: 0 0 12px; max-width: 60ch; }
+  .back { display: inline-block; margin-top: 44px; font: 600 19px 'Newsreader', Georgia, serif; }
+  footer { margin-top: 30px; color: var(--quiet); font-size: 14px; }
+  :focus-visible { outline: 2px solid var(--teal-soft); outline-offset: 3px; }
+</style>
+</head>
+<body>
+<main>
+  <header><a href="/" aria-label="kahakai, back to the bar"><img src="/logo.svg" alt="kahakai" width="640" height="250"></a></header>
+  <p class="lead">Kahakai is a small game studio. Our games are fun to play and easy to put down.</p>
+  <p class="sub">Most games are built to keep you. Ours are built to let you go.</p>
+
+  <h2>The games</h2>
+  <a class="game" href="/"><img src="/share.jpg" alt=""><div><b>The bar</b><span>A beach bar at dusk, two slippers and a glass float. Wreck it.</span><br><em>Free, on the front page</em></div></a>
+  <div class="game"><div class="ph"></div><div><b>More games</b><span>On the way.</span></div></div>
+
+  <h2>What we promise</h2>
+  <ol>
+    <li>A fair price, said up front, and the game is yours. No ads, no coins, nothing sold to keep you playing.</li>
+    <li>Stop whenever you like. Nothing is lost while you're away, and we never call you back.</li>
+    <li>What you do stays on your device unless you choose to send it.</li>
+    <li>We tell the truth: what a game is, who it's for, and how AI helped make it. We never copy an artist.</li>
+    <li>AI never pretends to be a person or a friend, and never chats with a child.</li>
+    <li>Nothing cruel.</li>
+  </ol>
+
+  <h2>How the bar was made</h2>
+  <p>Lit in Blender and drawn in code by one person working with Claude, an AI. No image or sound generator was used: the bar is a 3D scene, and every sound is made live by code. The wood, sand and sky use free-licence textures and photographs from Poly Haven.</p>
+
+  <h2>Press</h2>
+  <p>Kahakai is Jamey Warren, in Livingston, Montana. For a build, pictures or a question, write to <a href="mailto:aloha@kahak.ai">aloha@kahak.ai</a>.</p>
+  <p><a href="/logo.svg">The logo</a> · <a href="/share.jpg">A picture of the bar</a></p>
+
+  <a class="back" href="/">Back to the bar</a>
+  <footer>This page loads nothing from anywhere else and counts nothing.</footer>
+</main>
+</body>
+</html>
