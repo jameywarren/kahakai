@@ -31,6 +31,7 @@
   ol li { counter-increment: p; position: relative; padding: 9px 0 9px 34px; font: 400 19px/1.45 'Newsreader', Georgia, serif; }
   ol li::before { content: counter(p); position: absolute; left: 0; top: 12px; font: 500 12px/1 'Geist', system-ui, sans-serif; color: var(--copper); width: 20px; height: 20px; border: 1px solid var(--line); border-radius: 50%; display: grid; place-items: center; }
   p { margin: 0 0 12px; max-width: 60ch; }
+  .addr { -webkit-user-select: all; user-select: all; white-space: nowrap; }
   .back { display: inline-block; margin-top: 44px; font: 600 19px 'Newsreader', Georgia, serif; }
   footer { margin-top: 30px; color: var(--quiet); font-size: 14px; }
   :focus-visible { outline: 2px solid var(--teal-soft); outline-offset: 3px; }
@@ -44,7 +45,11 @@
 
   <h2>The games</h2>
   <a class="game" href="/"><img src="/share.jpg" alt=""><div><b>The bar</b><span>A beach bar at dusk, two slippers and a glass float. Wreck it.</span><br><em>Free, on the front page</em></div></a>
+  <a class="game" href="/beachcombing/"><img src="/beachcombing/share.jpg" alt=""><div><b>Beachcombing</b><span>A quiet beach to walk, with things to find.</span><br><em>Hanalei Bay is free to visit in your browser</em></div></a>
   <div class="game"><div class="ph"></div><div><b>More games</b><span>On the way.</span></div></div>
+
+  <h2>The next game</h2>
+  <p>Want to hear when it's out? <a href="mailto:aloha@kahak.ai?subject=Tell%20me%20when%20the%20next%20game%20is%20out&body=Yes%20please.">Send us a note</a> at <span class="addr">aloha@kahak.ai</span> and we'll write once, when there is a new game to play. Nothing else, and one word from you stops it.</p>
 
   <h2>What we promise</h2>
   <ol>
