@@ -1,0 +1,1110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Beachcombing · kahakai</title>
+<meta name="description" content="A beach to sit by: Hanalei Bay from sunset to night. Things wash up now and then. Take them or leave them.">
+<link rel="canonical" href="https://kahak.ai/beachcombing/">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="kahakai">
+<meta property="og:title" content="Beachcombing">
+<meta property="og:description" content="A beach to sit by. Things wash up now and then. Take them or leave them.">
+<meta property="og:url" content="https://kahak.ai/beachcombing/">
+<meta property="og:image" content="https://kahak.ai/beachcombing/share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#17132b">
+<link rel="preload" as="image" href="hanalei.jpg">
+<style>html, body { margin: 0; overscroll-behavior: none; -webkit-tap-highlight-color: transparent; }</style>
+<style>
+/* Layout: one full-screen scene. A headphone mark invites the first tap; a faint mark in the corner opens the card (sound, what this is, the way home). */
+:root {
+  --night: #17132b;
+  --ink: #fff4e6;
+  --glow: rgba(255, 214, 150, .55);
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+html { touch-action: pan-x pan-y; }   /* no pinch or double-tap zoom that leaves the beach stuck zoomed in; the card and the shelf still scroll */
+[hidden] { display: none !important; }
+body { background: var(--night); color: var(--ink); overflow: hidden; }
+canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+#gl { transition: opacity .9s ease; }
+#gl.out { opacity: 0; }
+#top { touch-action: none; cursor: pointer; }
+#ears {
+  position: fixed; left: 50%; top: 30%; width: 96px; height: 96px; margin: -48px 0 0 -48px; padding: 14px; box-sizing: border-box;
+  border-radius: 50%; background: radial-gradient(rgba(23, 19, 43, .5), rgba(23, 19, 43, 0) 70%);
+  color: var(--ink); pointer-events: none;
+  filter: drop-shadow(0 0 14px var(--glow)) drop-shadow(0 2px 6px rgba(23, 19, 43, .6));
+  animation: breathe 3.6s ease-in-out infinite; transition: opacity 1.6s ease;
+}
+#ears.gone { opacity: 0; animation: none; }
+@keyframes breathe { 0%, 100% { opacity: .5; transform: scale(.96); } 50% { opacity: 1; transform: scale(1.04); } }
+@media (prefers-reduced-motion: reduce) { #ears { animation: none; opacity: .9; } }
+
+/* prototype controls: a faint gear, and a panel behind it. Not part of the experience. */
+#gear {
+  position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px));
+  width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255, 244, 230, .22); background: rgba(23, 19, 43, .38);
+  color: var(--ink); opacity: .45; cursor: pointer; display: grid; place-items: center; padding: 0;
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+#gear:hover, #gear[aria-expanded="true"] { opacity: 1; }
+#gear:focus-visible, #panel button:focus-visible, #panel select:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+#panel {
+  position: fixed; top: calc(60px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px));
+  width: min(260px, calc(100vw - 24px)); padding: 14px; border-radius: 14px; display: grid; gap: 12px;
+  background: rgba(23, 19, 43, .78); border: 1px solid rgba(255, 244, 230, .2); color: var(--ink);
+  font: 13px/1.3 system-ui, -apple-system, 'Segoe UI', sans-serif; -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+}
+#panel label, #panel .lab { display: block; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; opacity: .7; margin-bottom: 6px; }
+#panel .row { display: flex; gap: 6px; }
+#panel button, #panel select {
+  flex: 1; min-width: 0; font: inherit; color: var(--ink); background: rgba(255, 244, 230, .08); border: 1px solid rgba(255, 244, 230, .22);
+  border-radius: 9px; padding: 9px 8px; cursor: pointer;
+}
+#panel select { width: 100%; color-scheme: dark; }
+#panel button[aria-pressed="true"] { background: #f8c46a; color: #17132b; border-color: #f8c46a; }
+
+/* the card: sound, what this is, how it was made, the way home */
+#menu {
+  position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); left: max(12px, env(safe-area-inset-left, 0px));
+  width: 40px; height: 40px; border-radius: 50%; border: 0; background: radial-gradient(rgba(23, 19, 43, .34), rgba(23, 19, 43, 0) 72%);
+  color: var(--ink); opacity: .5; cursor: pointer; display: grid; place-items: center; padding: 0; transition: opacity .3s;
+}
+#menu:hover, #menu[aria-expanded="true"] { opacity: 1; }
+#menu:focus-visible, #card button:focus-visible, #card a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+#cardwrap { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(23, 19, 43, .45); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
+  padding: max(20px, env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-right, 0px)) max(20px, env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px)); }
+#card { width: min(330px, 100%); max-height: 100%; overflow: auto; box-sizing: border-box; padding: 24px 24px 20px; border-radius: 16px; background: rgba(23, 19, 43, .82);
+  border: 1px solid rgba(255, 244, 230, .16); box-shadow: 0 18px 50px rgba(0, 0, 0, .45); font: 14px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif; color: rgba(255, 244, 230, .82); }
+#card h1 { margin: 0; font: italic 400 30px/1.1 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif; color: var(--ink); letter-spacing: -.01em; }
+#card .place { margin: 4px 0 16px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #f8c46a; }
+#card p { margin: 0 0 10px; text-wrap: pretty; }
+#c-places { display: grid; gap: 6px; margin: -6px 0 16px; }
+#c-places button { text-align: left; padding: 9px 14px; font: inherit; color: rgba(255, 244, 230, .82); cursor: pointer; background: none; border: 1px solid rgba(255, 244, 230, .14); border-radius: 10px; }
+#c-places button[aria-current="true"] { color: var(--ink); border-color: rgba(248, 196, 106, .7); background: rgba(248, 196, 106, .1); }
+#card .small { font-size: 13px; margin: 0; } #card .small a { color: rgba(255, 244, 230, .7); text-underline-offset: 3px; }
+#c-snd { display: flex; justify-content: space-between; align-items: center; width: 100%; margin: 0 0 16px; padding: 11px 14px; font: inherit; color: var(--ink); cursor: pointer;
+  background: rgba(255, 244, 230, .07); border: 1px solid rgba(255, 244, 230, .2); border-radius: 10px; }
+#c-snd b { font-weight: 500; color: #f8c46a; }
+#card .foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 244, 230, .14); }
+#card .foot a { color: var(--ink); text-decoration: none; font-size: 13px; }
+#card .foot svg { display: block; height: 20px; width: auto; }
+#card .foot svg path { fill: currentColor; }
+
+/* the shelf of finds, and the note from a bottle */
+#shelf, #note { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(23, 19, 43, .55); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  padding: max(20px, env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-right, 0px)) max(20px, env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px)); }
+#shelf .board { touch-action: pan-y; overscroll-behavior: contain; box-sizing: border-box; user-select: none; -webkit-user-select: none; width: min(560px, 100%); max-height: 100%; overflow: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px 10px; padding: 18px 16px 10px;
+  border-radius: 10px; background: #46311f url(shelf.jpg) center / cover; box-shadow: 0 18px 50px rgba(0, 0, 0, .55), inset 0 0 0 1px rgba(255, 244, 230, .08), inset 0 0 60px rgba(10, 6, 2, .45); }
+#shelf figure { margin: 0; display: grid; justify-items: center; padding-bottom: 6px; }
+#shelf canvas { position: static; width: 84px; height: 72px; filter: drop-shadow(0 5px 4px rgba(8, 4, 0, .55)); }
+#shelf figcaption { font: 11px/1 system-ui, sans-serif; color: rgba(255, 244, 230, .6); font-variant-numeric: tabular-nums; letter-spacing: .06em; }
+#note .paper { margin: 0; transform-origin: 50% 0; max-width: min(420px, 100%); background: linear-gradient(100deg, #efe3c8, #f6ecd6 30%, #f1e6cd 70%, #e6d8b8); color: #3a2a1c; padding: 30px 28px; border-radius: 3px; transform: rotate(-1.5deg);
+  font: italic 400 21px/1.5 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Hiragino Mincho ProN', 'Songti SC', 'Noto Serif CJK JP', Georgia, serif; box-shadow: 0 18px 50px rgba(0, 0, 0, .5); text-wrap: balance; }
+#note .paper:lang(ja), #note .paper:lang(ko), #note .paper:lang(zh) { font-style: normal; line-height: 1.7; }
+@media (max-height: 460px) { #shelf .board { width: min(780px, 100%); } }
+#note .sheet { display: grid; justify-items: center; gap: 16px; width: min(420px, 100%); }
+#reply { background: none; border: 0; padding: 8px 12px; cursor: pointer; color: rgba(255, 244, 230, .8); font: italic 400 16px/1.2 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Hiragino Mincho ProN', 'Songti SC', Georgia, serif; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(255, 244, 230, .35); }
+#write { display: grid; gap: 10px; width: 100%; justify-items: end; }
+#msg { width: 100%; box-sizing: border-box; resize: none; padding: 18px 20px; border: 0; border-radius: 3px; background: #f1e6cd; color: #3a2a1c; font: italic 400 19px/1.45 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Hiragino Mincho ProN', 'Songti SC', Georgia, serif; box-shadow: 0 12px 34px rgba(0, 0, 0, .45); }
+#hint { margin: 0; width: 100%; font: 12.5px/1.45 system-ui, -apple-system, 'Segoe UI', sans-serif; color: rgba(255, 244, 230, .62); }
+#send { padding: 10px 22px; border: 0; border-radius: 999px; background: #f8c46a; color: #17132b; font: 600 14px/1 system-ui, -apple-system, 'Segoe UI', sans-serif; cursor: pointer; }
+#reply:focus-visible, #send:focus-visible, #msg:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<script>window.KAHAKAI_PLACES = ["hanalei"];</script>
+
+
+<canvas id="gl"></canvas>
+<canvas id="top" role="img" aria-label="Hanalei Bay at sunset. Tap anywhere to hear the water; headphones are best. Things wash up on the sand: tap one to put it in your basket, and tap the basket to see what you have found. Drag on the sand to leave footprints."></canvas>
+<svg id="ears" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M12 38v-6a20 20 0 0 1 40 0v6"/>
+  <rect x="8" y="36" width="9" height="16" rx="4.5"/>
+  <rect x="47" y="36" width="9" height="16" rx="4.5"/>
+  <path d="M27 40c2 2.4 2 5.6 0 8M32 37c3.6 4.2 3.6 9.800 0 14M37 40c-2 2.400-2 5.600 0 8" stroke-width="1.8" opacity=".75"/>
+</svg>
+
+<button id="menu" type="button" aria-label="Beachcombing: sound, and what this is" aria-expanded="false" aria-controls="card">
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3 15h18M7.500 15a4.500 4.500 0 0 1 9 0M8 18.500h8M10.500 21.500h3"/></svg>
+</button>
+<div id="cardwrap" hidden><div id="card" role="dialog" aria-labelledby="c-title">
+  <h1 id="c-title">Beachcombing</h1>
+  <p class="place" id="c-place"></p>
+  <div id="c-places" hidden></div>
+  <button id="c-snd" type="button"><span id="c-sound"></span><b id="c-state"></b></button>
+  <p id="c-line"></p>
+  <p class="small"><a id="c-how" href="https://kahak.ai/beachcombing/" target="_top"></a></p>
+  <div class="foot"><a id="c-home" href="https://kahak.ai/" aria-label="kahakai"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 498.3 112" role="img" aria-label="kahakai">
+  <path d="M31.0483291015625 -34.3562529296875 37.17572509765625 -40.11224560546875 64.33743408203125 -3.44468017578125 69.8343720703125 -1.6544677734375V0.0H39.41642236328125V-1.6544677734375L45.37880908203125 -3.19021240234375L25.6723291015625 -29.99225537109375H21.30203564453125V-33.2093603515625H26.0508828125L51.40586376953125 -53.54629833984375L42.79394970703125 -55.496V-57.344H66.15003076171875V-55.496L57.181947265625 -53.45804296875ZM24.924159667968752 -3.45319091796875 31.34126953125 -1.6544677734375V0.0H1.9344677734375V-1.6544677734375L8.58902392578125 -3.45319091796875V-70.1732841796875Q7.86102392578125 -70.67549658203126 6.556896240234375 -71.57217675781251Q5.2527685546875 -72.46885693359376 3.4607685546875 -73.70826025390625Q1.6687685546875 -74.94766357421875 -0.5152314453125 -76.47804541015626V-77.84221484375L24.154033203125 -83.3414462890625H24.924159667968752V-72.875236328125Z M104.20655615234377 -36.65489501953125 104.34766357421876 -33.97047021484375Q98.42246777343752 -31.98136279296875 94.75718847656252 -30.133149169921875Q91.09190917968752 -28.284935546875 89.15701416015627 -26.35361572265625Q87.22211914062501 -24.4222958984375 86.5075654296875 -22.219486816406253Q85.79301171875001 -20.016677734375 85.79301171875001 -17.2861240234375Q85.79301171875001 -12.63633642578125 87.94003442382814 -10.46152734375Q90.08705712890627 -8.28671826171875 93.40671826171877 -8.28671826171875Q95.77616699218751 -8.28671826171875 97.51931738281252 -9.2380380859375Q99.26246777343752 -10.18935791015625 100.24268139648439 -12.126720703125Q101.22289501953126 -14.064083496093751 101.22289501953126 -17.04595703125V-43.319828125Q101.22289501953126 -48.25676611328125 98.66795825195314 -50.93983056640625Q96.11302148437501 -53.62289501953125 90.86740332031252 -53.62289501953125Q88.26587109375001 -53.62289501953125 85.93314672851564 -53.33349047851563Q83.60042236328127 -53.0440859375 82.12740087890626 -52.4975322265625L84.69174218750001 -55.44987109375Q84.35752978515626 -52.214384277343754 83.94604052734377 -49.788682617187504Q83.53455126953126 -47.36298095703125 83.01442358398438 -45.72532104492187Q82.49429589843751 -44.0876611328125 81.79004052734376 -43.16791650390625Q80.94331738281251 -42.05821484375 79.24561572265625 -41.3642578125Q77.54791406250001 -40.67030078125 75.55251074218751 -40.67030078125Q72.94289501953126 -40.67030078125 71.62017187500001 -41.58915161132812Q70.29744873046876 -42.50800244140625 70.29744873046876 -44.2202578125Q70.29744873046876 -46.69098095703125 72.75115039062501 -49.2286826171875Q75.20485205078126 -51.766384277343754 79.23574462890626 -53.919702880859376Q83.26663720703127 -56.073021484375 88.17808227539064 -57.38723388671875Q93.08952734375 -58.7014462890625 97.98126953125 -58.7014462890625Q105.11658691406251 -58.7014462890625 109.41135180664064 -56.63974462890626Q113.70611669921877 -54.578042968750005 115.63207373046876 -50.818639648437504Q117.55803076171875 -47.059236328125 117.55803076171875 -41.93813134765625V-10.7484248046875Q117.55803076171875 -9.1853603515625 118.05105224609376 -8.207828124999999Q118.54407373046877 -7.2302958984375 119.47747827148439 -6.785657470703125Q120.4108828125 -6.3410190429687505 121.63615966796877 -6.3410190429687505Q123.20773486328127 -6.3410190429687505 124.75131005859377 -6.790806640625Q126.29488525390627 -7.2405942382812505 127.93097119140626 -8.21319091796875V-5.87012890625Q123.66824804687502 -1.512 120.0844616699219 -0.07727685546874996Q116.50067529296877 1.3574462890625 112.1671455078125 1.3574462890625Q108.19829589843752 1.3574462890625 105.84314794921877 -0.20965991210937496Q103.48800000000001 -1.77676611328125 102.42668139648438 -4.9566801757812495Q101.36536279296877 -8.13659423828125 101.19736279296876 -12.95889013671875L101.74527685546877 -12.602720703125Q100.67455371093752 -8.14016943359375 98.49906445312502 -5.039106201171875Q96.32357519531251 -1.93804296875 93.25208593750001 -0.325915283203125Q90.18059667968751 1.28621240234375 86.39812890625001 1.28621240234375Q78.67055615234376 1.28621240234375 74.22438549804689 -2.6116169433593748Q69.77821484375 -6.5094462890625 69.77821484375 -13.422978515625001Q69.77821484375 -16.9765107421875 71.00259790039064 -19.768893798828124Q72.22698095703126 -22.56127685546875 75.76774707031251 -25.08978759765625Q79.30851318359376 -27.61829833984375 86.15327929687501 -30.379319824218747Q92.99804541015627 -33.14034130859375 104.20655615234377 -36.65489501953125Z M163.63157275390626 -1.6544677734375 170.05719335937502 -3.3819570312500002V-38.2027255859375Q170.05719335937502 -41.50357763671875 169.00238427734377 -43.58430200195313Q167.9475751953125 -45.6650263671875 165.80570166015627 -46.65196313476562Q163.663828125 -47.63889990234375 160.28637939453125 -47.63889990234375Q156.95463232421878 -47.63889990234375 153.80543896484377 -46.73170776367188Q150.65624560546877 -45.824515625000004 147.92926708984376 -44.51277099609375L147.50994726562502 -45.59379248046875Q151.85420263671875 -49.79157763671875 154.99109643554686 -52.350342529296874Q158.127990234375 -54.909107421875 160.62424560546876 -56.23093676757813Q163.1205009765625 -57.55276611328125 165.50296875 -58.008383056640625Q167.8854365234375 -58.464 170.76160595703126 -58.464Q178.68492578125 -58.464 182.53862744140628 -54.12736157226563Q186.39232910156252 -49.79072314453125 186.39232910156252 -41.10178515625V-3.45319091796875L193.023140625 -1.6544677734375V0.0H163.63157275390626ZM156.14152490234378 0.0H126.75846777343752V-1.6544677734375L133.41302392578126 -3.45319091796875V-69.43720068359376Q132.68502392578125 -69.98690234375 131.3808962402344 -70.95481640625Q130.0767685546875 -71.92273046875 128.2847685546875 -73.24523999023438Q126.49276855468752 -74.56774951171874 124.30876855468752 -76.21685449218751V-77.58102392578125L148.97803320312502 -83.3414462890625H149.74815966796876V-58.037765625V-3.3819570312500002L156.14152490234378 -1.6544677734375Z M230.54255615234376 -36.65489501953125 230.68366357421877 -33.97047021484375Q224.75846777343753 -31.98136279296875 221.09318847656255 -30.133149169921875Q217.42790917968753 -28.284935546875 215.4930141601563 -26.35361572265625Q213.55811914062502 -24.4222958984375 212.84356542968754 -22.219486816406253Q212.12901171875004 -20.016677734375 212.12901171875004 -17.2861240234375Q212.12901171875004 -12.63633642578125 214.27603442382815 -10.46152734375Q216.42305712890627 -8.28671826171875 219.74271826171878 -8.28671826171875Q222.11216699218753 -8.28671826171875 223.85531738281253 -9.2380380859375Q225.59846777343753 -10.18935791015625 226.5786813964844 -12.126720703125Q227.5588950195313 -14.064083496093751 227.5588950195313 -17.04595703125V-43.319828125Q227.5588950195313 -48.25676611328125 225.00395825195318 -50.93983056640625Q222.44902148437504 -53.62289501953125 217.20340332031253 -53.62289501953125Q214.60187109375002 -53.62289501953125 212.26914672851564 -53.33349047851563Q209.93642236328128 -53.0440859375 208.46340087890627 -52.4975322265625L211.02774218750002 -55.44987109375Q210.69352978515627 -52.214384277343754 210.28204052734378 -49.788682617187504Q209.8705512695313 -47.36298095703125 209.35042358398442 -45.72532104492187Q208.83029589843753 -44.0876611328125 208.12604052734378 -43.16791650390625Q207.27931738281254 -42.05821484375 205.5816157226563 -41.3642578125Q203.88391406250003 -40.67030078125 201.88851074218752 -40.67030078125Q199.27889501953126 -40.67030078125 197.95617187500002 -41.58915161132812Q196.63344873046879 -42.50800244140625 196.63344873046879 -44.2202578125Q196.63344873046879 -46.69098095703125 199.08715039062503 -49.2286826171875Q201.54085205078127 -51.766384277343754 205.5717446289063 -53.919702880859376Q209.60263720703128 -56.073021484375 214.51408227539065 -57.38723388671875Q219.42552734375002 -58.7014462890625 224.31726953125002 -58.7014462890625Q231.45258691406252 -58.7014462890625 235.74735180664067 -56.63974462890626Q240.04211669921878 -54.578042968750005 241.96807373046877 -50.818639648437504Q243.89403076171877 -47.059236328125 243.89403076171877 -41.93813134765625V-10.7484248046875Q243.89403076171877 -9.1853603515625 244.3870522460938 -8.207828124999999Q244.88007373046878 -7.2302958984375 245.8134782714844 -6.785657470703125Q246.74688281250002 -6.3410190429687505 247.97215966796878 -6.3410190429687505Q249.5437348632813 -6.3410190429687505 251.0873100585938 -6.790806640625Q252.63088525390629 -7.2405942382812505 254.26697119140627 -8.21319091796875V-5.87012890625Q250.00424804687503 -1.512 246.4204616699219 -0.07727685546874996Q242.83667529296878 1.3574462890625 238.50314550781252 1.3574462890625Q234.53429589843753 1.3574462890625 232.17914794921876 -0.20965991210937496Q229.824 -1.77676611328125 228.7626813964844 -4.9566801757812495Q227.70136279296878 -8.13659423828125 227.53336279296877 -12.95889013671875L228.0812768554688 -12.602720703125Q227.01055371093753 -8.14016943359375 224.83506445312503 -5.039106201171875Q222.65957519531253 -1.93804296875 219.5880859375 -0.325915283203125Q216.51659667968752 1.28621240234375 212.73412890625002 1.28621240234375Q205.00655615234376 1.28621240234375 200.5603854980469 -2.6116169433593748Q196.11421484375003 -6.5094462890625 196.11421484375003 -13.422978515625001Q196.11421484375003 -16.9765107421875 197.33859790039065 -19.768893798828124Q198.56298095703127 -22.56127685546875 202.10374707031252 -25.08978759765625Q205.64451318359377 -27.61829833984375 212.48927929687503 -30.379319824218747Q219.33404541015628 -33.14034130859375 230.54255615234376 -36.65489501953125Z M282.2083291015625 -34.3562529296875 288.3357250976563 -40.11224560546875 315.4974340820313 -3.44468017578125 320.9943720703125 -1.6544677734375V0.0H290.57642236328127V-1.6544677734375L296.53880908203126 -3.19021240234375L276.83232910156255 -29.99225537109375H272.4620356445313V-33.2093603515625H277.2108828125L302.5658637695313 -53.54629833984375L293.95394970703126 -55.496V-57.344H317.3100307617188V-55.496L308.34194726562504 -53.45804296875ZM276.0841596679688 -3.45319091796875 282.50126953125005 -1.6544677734375V0.0H253.09446777343751V-1.6544677734375L259.7490239257813 -3.45319091796875V-70.1732841796875Q259.02102392578126 -70.67549658203126 257.7168962402344 -71.57217675781251Q256.41276855468755 -72.46885693359376 254.62076855468752 -73.70826025390625Q252.8287685546875 -74.94766357421875 250.64476855468752 -76.47804541015626V-77.84221484375L275.314033203125 -83.3414462890625H276.0841596679688V-72.875236328125Z M355.3665561523438 -36.65489501953125 355.5076635742188 -33.97047021484375Q349.5824677734375 -31.98136279296875 345.9171884765625 -30.133149169921875Q342.2519091796875 -28.284935546875 340.3170141601563 -26.35361572265625Q338.38211914062504 -24.4222958984375 337.66756542968756 -22.219486816406253Q336.95301171875 -20.016677734375 336.95301171875 -17.2861240234375Q336.95301171875 -12.63633642578125 339.1000344238281 -10.46152734375Q341.24705712890625 -8.28671826171875 344.56671826171873 -8.28671826171875Q346.9361669921875 -8.28671826171875 348.67931738281254 -9.2380380859375Q350.4224677734375 -10.18935791015625 351.40268139648435 -12.126720703125Q352.38289501953125 -14.064083496093751 352.38289501953125 -17.04595703125V-43.319828125Q352.38289501953125 -48.25676611328125 349.82795825195313 -50.93983056640625Q347.273021484375 -53.62289501953125 342.0274033203125 -53.62289501953125Q339.42587109375 -53.62289501953125 337.09314672851565 -53.33349047851563Q334.76042236328124 -53.0440859375 333.2874008789063 -52.4975322265625L335.8517421875 -55.44987109375Q335.5175297851563 -52.214384277343754 335.1060405273438 -49.788682617187504Q334.69455126953125 -47.36298095703125 334.1744235839844 -45.72532104492187Q333.6542958984375 -44.0876611328125 332.95004052734373 -43.16791650390625Q332.1033173828125 -42.05821484375 330.40561572265625 -41.3642578125Q328.7079140625 -40.67030078125 326.71251074218753 -40.67030078125Q324.1028950195313 -40.67030078125 322.780171875 -41.58915161132812Q321.45744873046874 -42.50800244140625 321.45744873046874 -44.2202578125Q321.45744873046874 -46.69098095703125 323.91115039062504 -49.2286826171875Q326.3648520507813 -51.766384277343754 330.3957446289063 -53.919702880859376Q334.42663720703126 -56.073021484375 339.33808227539066 -57.38723388671875Q344.24952734375 -58.7014462890625 349.14126953125003 -58.7014462890625Q356.27658691406253 -58.7014462890625 360.5713518066407 -56.63974462890626Q364.86611669921876 -54.578042968750005 366.79207373046876 -50.818639648437504Q368.71803076171875 -47.059236328125 368.71803076171875 -41.93813134765625V-10.7484248046875Q368.71803076171875 -9.1853603515625 369.21105224609374 -8.207828124999999Q369.70407373046874 -7.2302958984375 370.6374782714844 -6.785657470703125Q371.57088281250003 -6.3410190429687505 372.79615966796877 -6.3410190429687505Q374.36773486328127 -6.3410190429687505 375.91131005859376 -6.790806640625Q377.45488525390624 -7.2405942382812505 379.09097119140625 -8.21319091796875V-5.87012890625Q374.828248046875 -1.512 371.24446166992186 -0.07727685546874996Q367.6606752929688 1.3574462890625 363.32714550781253 1.3574462890625Q359.3582958984375 1.3574462890625 357.00314794921877 -0.20965991210937496Q354.648 -1.77676611328125 353.5866813964844 -4.9566801757812495Q352.52536279296874 -8.13659423828125 352.35736279296873 -12.95889013671875L352.90527685546874 -12.602720703125Q351.8345537109375 -8.14016943359375 349.659064453125 -5.039106201171875Q347.4835751953125 -1.93804296875 344.4120859375 -0.325915283203125Q341.3405966796875 1.28621240234375 337.55812890625003 1.28621240234375Q329.8305561523438 1.28621240234375 325.38438549804687 -2.6116169433593748Q320.93821484375 -6.5094462890625 320.93821484375 -13.422978515625001Q320.93821484375 -16.9765107421875 322.16259790039067 -19.768893798828124Q323.38698095703126 -22.56127685546875 326.92774707031253 -25.08978759765625Q330.46851318359376 -27.61829833984375 337.313279296875 -30.379319824218747Q344.15804541015626 -33.14034130859375 355.3665561523438 -36.65489501953125Z M392.986548828125 -65.41242968750001Q388.79369921875 -65.41242968750001 386.3579128417969 -68.14098217773437Q383.9221264648438 -70.86953466796875 383.9221264648438 -74.40740576171875Q383.9221264648438 -77.87404296875 386.3579128417969 -80.35059545898437Q388.79369921875 -82.82714794921876 392.986548828125 -82.82714794921876Q397.2031430664063 -82.82714794921876 399.5388017578125 -80.35059545898437Q401.87446044921876 -77.87404296875 401.87446044921876 -74.40740576171875Q401.87446044921876 -70.86953466796875 399.5388017578125 -68.14098217773437Q397.2031430664063 -65.41242968750001 392.986548828125 -65.41242968750001ZM401.883904296875 -59.05625537109375V-47.59012890625V-3.3819570312500002L408.27726953125006 -1.6544677734375V0.0H378.8942124023438V-1.6544677734375L385.5487685546875 -3.45319091796875V-45.1341337890625Q384.9327685546875 -45.69234619140625 383.87885327148445 -46.58319702148438Q382.8249379882813 -47.4740478515625 381.4188950195313 -48.707621826171874Q380.0128520507813 -49.94119580078125 378.2768520507813 -51.48008837890625V-52.844257812500004L401.1137778320313 -59.05625537109375Z" transform="translate(44 92)" fill="#efe7d8"/>
+  <line x1="0" x2="498.3" y1="101" y2="101" stroke="#d2704a" stroke-width="3"/>
+</svg></a><a href="mailto:aloha@kahak.ai">aloha@kahak.ai</a></div>
+</div></div>
+
+<button id="gear" type="button" hidden aria-label="Prototype controls" aria-expanded="false" aria-controls="panel">
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.900 2.900l-.1-.1a1.700 1.700 0 0 0-1.800-.3 1.700 1.700 0 0 0-1 1.500V21a2 2 0 1 1-4 0v-.1a1.700 1.700 0 0 0-1.100-1.500 1.700 1.700 0 0 0-1.800.3l-.1.1a2 2 0 1 1-2.900-2.900l.1-.1a1.700 1.700 0 0 0 .3-1.800 1.700 1.700 0 0 0-1.500-1H3a2 2 0 1 1 0-4h.1a1.700 1.700 0 0 0 1.500-1.100 1.700 1.700 0 0 0-.3-1.800l-.1-.1a2 2 0 1 1 2.900-2.900l.1.100a1.700 1.700 0 0 0 1.800.300h.1a1.700 1.700 0 0 0 1-1.500V3a2 2 0 1 1 4 0v.1a1.700 1.700 0 0 0 1 1.500 1.700 1.700 0 0 0 1.800-.300l.1-.1a2 2 0 1 1 2.900 2.900l-.1.100a1.700 1.700 0 0 0-.300 1.800v.1a1.700 1.700 0 0 0 1.500 1H21a2 2 0 1 1 0 4h-.1a1.700 1.700 0 0 0-1.500 1z"/></svg>
+</button>
+<div id="panel" hidden>
+  <div><label for="beach">Beach</label><select id="beach"></select></div>
+  <div><span class="lab">Time</span><div class="row"><button type="button" id="t-sunset" data-t="0">Sunset</button><button type="button" id="t-dusk" data-t="0.5">Dusk</button><button type="button" id="t-night" data-t="1">Night</button></div></div>
+  <div><span class="lab">Sound</span><div class="row"><button type="button" id="snd" aria-pressed="false">Off</button></div></div>
+  <div><span class="lab">Tide</span><div class="row"><button type="button" id="bring">Bring a find</button><button type="button" id="bottle">Bring a bottle</button></div></div>
+</div>
+
+<div id="shelf" hidden><div class="board" id="board"></div></div>
+<div id="note" hidden><div class="sheet"><p class="paper" id="notetext"></p>
+  <button id="reply" type="button"></button>
+  <form id="write" hidden><textarea id="msg" maxlength="100" rows="3" aria-labelledby="reply"></textarea><p id="hint"></p><button id="send" type="submit"></button></form>
+</div></div>
+
+<script>
+(() => {
+  const glc = document.getElementById('gl'), cv = document.getElementById('top'), c = cv.getContext('2d'), ears = document.getElementById('ears');
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const N = 128, LAG = 1.3, RISE = 0.3;
+  let W = 0, H = 0, DPR = 1, GLS = 1, u = 0, hy = 0, ysMin = 0, seaH = 0;
+  let xs = [], ys = [], edge = [], wet = [], dusk = 0, foamAmt = 0;
+  const startT = performance.now() / 1000;
+  const clamp = (v, a, z) => Math.max(a, Math.min(z, v));
+  const sil = al => { const d = dusk; return `rgba(${26 - 14 * d | 0},${20 - 10 * d | 0},${42 - 18 * d | 0},${al})`; };
+  // every beach: its plates are <key>.jpg, -dusk, -night and -mask. sfr is the waterline in the plate; sun and moon are tap spots.
+  const BEACHES = {
+    hanalei: { name: 'Hanalei Bay, Kaua\u02bbi', main: 'Sunset', sfr: .596, grade: 1, sun: [.537, .41], moon: [.39, .195], surf: 1, bird: true, sea: [[.548, .598], [.705, .76]] },
+    polihale: { name: 'Polihale, Kaua\u02bbi', main: 'Sunset', sfr: .593, grade: .55, sun: [.558, .416], moon: [.384, .357], surf: 1.15, bird: false, mirror: 1, sea: [[.06, .27], [.57, .612]], light: [.528, .4365], milky: 1 },
+    punaluu: { name: 'Punalu\u02bbu, Hawai\u02bbi Island', main: 'Golden hour', sfr: .596, grade: .22, pop: .5, sun: null, moon: [.417, .325], surf: 1.1, bird: false, mirror: 1, sea: [[.43, .62]],
+      rocks: [.05, .5, .6, .64], perch: [[.27, .548], [.4, .537], [.5, .532], [.15, .612], [.33, .59]] },
+  };
+  const KEYS = Object.keys(BEACHES);
+  // visitors get Hanalei. #proto brings back the building controls (and #proto,polihale etc. the other beaches); #fast and #dusk are for tests.
+  const HASH = location.hash, PROTO = /proto/.test(HASH);
+  // PLACES: the beaches a visitor can go to from the card. The site build may narrow it (window.KAHAKAI_PLACES = ['hanalei']).
+  const PLACES = (Array.isArray(window.KAHAKAI_PLACES) ? window.KAHAKAI_PLACES : KEYS).filter(k => KEYS.includes(k));
+  let cur = KEYS.find(k => HASH.includes(k) && (PROTO || PLACES.includes(k))) || PLACES[0] || KEYS[0], B = BEACHES[cur];
+  const HFR = .44; let SFR = B.sfr;   // where the horizon and the waterline sit in the plate
+  let pan = 0, D = 0, offX = 0, offY = 0, shore = 0, plateReady = false, later = 0, loadBeach = () => {};
+  const ysAt = x => shore + Math.sin(x / W * 3.1 + .4) * D * .004;
+
+  // ---------- the world: a rendered plate of the bay, with living water, wash and wet sand on top (WebGL) ----------
+  const gl = glc.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'high-performance' });
+  const FRAG = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+uniform vec2 uRes, uBuf, uOff; uniform float uScale, uT, uDusk, uHy, uShore, uD, uU, uFoam; uniform sampler2D uLines, uPlate, uMask, uDuskP, uNightP; uniform float uHave, uGrade, uPop, uMirror;
+const float NL = 128., HFR = .44;
+float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.-2.*f);
+  return mix(mix(hash(i), hash(i+vec2(1.,0.)), f.x), mix(hash(i+vec2(0.,1.)), hash(i+vec2(1.,1.)), f.x), f.y); }
+float fbm3(vec2 p){ float a=.5, s=0.; for(int i=0;i<3;i++){ s+=a*noise(p); p=p*2.03+vec2(17.,9.); a*=.5; } return s; }
+float dec(vec2 v){ return (v.x*255.*256. + v.y*255.) / 65535.; }
+float lineAt(float x01, out float wetY){
+  float fx = clamp(x01,0.,1.)*(NL-1.), i = floor(fx), fr = fx - i;
+  vec4 a = texture2D(uLines, vec2((i+.5)/NL, .5)), b = texture2D(uLines, vec2((min(i+1.,NL-1.)+.5)/NL, .5));
+  wetY = mix(dec(a.ba), dec(b.ba), fr) * uRes.y;
+  return mix(dec(a.rg), dec(b.rg), fr) * uRes.y;
+}
+// the grade: the render's light, pushed toward the painted palette
+vec3 grade(vec3 c, vec2 uv){
+  float l = dot(c, vec3(.3,.59,.11));
+  c = mix(c, c*vec3(.95,.82,1.22), (1. - smoothstep(0., .45, l))*.55);
+  c = mix(c, c*vec3(.86,.74,1.22) + vec3(.02,0.,.05), smoothstep(HFR, 0., uv.y)*.65);
+  c += vec3(.10,0.,.04) * exp(-pow((uv.y - .30)/.11, 2.)) * smoothstep(.1, .5, l);
+  c *= vec3(1.06,.99,.96);
+  l = dot(c, vec3(.3,.59,.11));
+  return mix(vec3(l), c, 1.25);
+}
+// three renders of the same bay: sunset, dusk, night. The evening is a fade from one to the next.
+vec3 T(vec2 uv){
+  uv = clamp(uv, 0., 1.);
+  float a = clamp(uDusk*2., 0., 1.)*uHave, b = clamp(uDusk*2. - 1., 0., 1.)*uHave;
+  vec3 c = texture2D(uPlate, uv).rgb;
+  if (a > 0.) c = mix(c, texture2D(uDuskP, uv).rgb, smoothstep(0., 1., a));
+  if (b > 0.) c = mix(c, texture2D(uNightP, uv).rgb, smoothstep(0., 1., b));
+  c = mix(c, grade(c, uv), uGrade*(1. - .55*a));
+  // daylight beaches: a little contrast and colour, fading out as evening comes
+  float pop = uPop*(1. - a); vec3 s = c*c*(3. - 2.*c); c = mix(c, s, pop*.55); return mix(vec3(dot(c, vec3(.3,.59,.11))), c, 1. + pop*.28);
+}
+void main(){
+  vec2 p = vec2(gl_FragCoord.x, uBuf.y - gl_FragCoord.y) / uScale, uv = (p - uOff)/uD;
+  float x01 = p.x/uRes.x, wetY, edgeY = lineAt(x01, wetY);
+  float rest = uShore + sin(x01*3.1 + .4)*uD*.004;
+  vec3 col; float starM = 0.;
+  if (p.y < uHy) {
+    // the clouds drift: a slow warp, only where the mask says open sky, and stilled toward the horizon
+    vec2 fl = vec2(fbm3(uv*3. + vec2(uT*.012, 0.)) - .5, fbm3(uv*3. + 7. - vec2(0., uT*.009)) - .5) * .014;
+    float m = texture2D(uMask, uv).r * texture2D(uMask, clamp(uv + fl, 0., 1.)).r * texture2D(uMask, clamp(uv - fl, 0., 1.)).r;
+    col = T(uv + fl * smoothstep(.75, 1., m) * smoothstep(HFR - .02, HFR - .22, uv.y)); starM = m;
+  }
+  else if (p.y < edgeY) {
+    float f = (p.y - uHy)/(uShore - uHy), calmf = smoothstep(0., .09, f);
+    float wz = 1./(f + .04); vec2 wp = vec2((p.x - .5*uRes.x)/uU*wz*1.5, wz*2.2);
+    float nx = (fbm3(wp*vec2(3.,9.) + vec2(uT*.05, uT*.22)) - .5)*calmf, ny = (fbm3(wp*vec2(7.,22.) - vec2(uT*.08, uT*.36) + 7.) - .5)*calmf;
+    col = T(uv + vec2(nx*.014*(f+.1), ny*.012*(f+.12)));
+    float l = dot(col, vec3(.3,.59,.11));
+    col += vec3(1.,.86,.62) * pow(noise(wp*vec2(40.,150.) + vec2(0., uT*1.4)), 4.) * smoothstep(.5, .95, l) * .6 * calmf;
+    col += nx*.05;
+    float s = smoothstep(rest - 10., rest + 8., p.y);
+    if (s > 0.) { vec2 muv = vec2(uv.x + nx*.01, HFR - (uv.y - HFR)*.9 + ny*.01); muv.y = min(muv.y, HFR - .004); vec3 sandy = T(vec2(uv.x, max(uv.y, (uShore - uOff.y)/uD + .012))); float sk = 1. - uMirror*(1. - texture2D(uMask, muv).r); col = mix(col, mix(sandy*.95, mix(T(vec2(muv.x, muv.y*.3)), T(muv), sk), .38) + .02, s); }
+    float de = edgeY - p.y, bio = smoothstep(.55, 1., uDusk);
+    float lace = smoothstep(.5, .72, fbm3(p*.05 + vec2(0., -uT*.12))) * exp(-de/(uU*.04)) * uFoam;
+    float fe = exp(-de/2.5)*(.5 + .5*uFoam) + exp(-de/9.)*.25*uFoam;
+    col = mix(col, mix(vec3(1.,.96,.9), vec3(.4,1.,1.1), bio*.7), clamp(fe + lace*.75, 0., 1.));
+    col += vec3(.2,.9,1.) * step(.955, noise(p*.55 + vec2(0., uT*.3))) * exp(-de/(uU*.06)) * bio * .8;
+  } else {
+    vec3 base = T(uv);
+    float w = smoothstep(wetY + 3., wetY - 8., p.y), film = exp(-(p.y - edgeY)/(uU*.035));
+    vec2 muv = vec2(uv.x + (noise(p*.05)-.5)*.01, HFR - (uv.y - HFR)*.55); muv.y = clamp(muv.y, .02, HFR - .005);
+    float sk2 = 1. - uMirror*(1. - texture2D(uMask, muv).r); col = mix(base, mix(base*.6, mix(T(vec2(muv.x, muv.y*.3)), T(muv), sk2), .28 + .42*film), w);
+    col *= 1. - exp(-(p.y - edgeY)/3.)*.18;
+  }
+  col += step(.9978, hash(floor(p/1.7))) * smoothstep(.42, .12, dot(col, vec3(.3,.59,.11))) * starM * smoothstep(.45, 1., uDusk) * (.6 + .3*sin(uT*2. + p.x)) * smoothstep(HFR, HFR - .12, uv.y);
+  vec2 vg = p/uRes - .5; col *= 1. - .5*dot(vg, vg);
+  col += (hash(p + fract(uT)) - .5)*.014;
+  gl_FragColor = vec4(clamp(col, 0., 1.), 1.);
+}
+`;
+  let U = null; const lineBytes = new Uint8Array(N * 4);
+  const lostCheck = () => { if (!gl || !gl.isContextLost()) return; try { const t = +sessionStorage.getItem('kahakai-reload') || 0; if (Date.now() - t < 60000) return; sessionStorage.setItem('kahakai-reload', Date.now()); } catch (e) {} location.reload(); };
+  glc.addEventListener('webglcontextlost', e => { e.preventDefault(); plateReady = false; glc.classList.add('out'); setTimeout(lostCheck, 1500); });
+  glc.addEventListener('webglcontextrestored', () => { lostCheck(); location.reload(); });
+  addEventListener('pageshow', () => setTimeout(lostCheck, 1200));
+  if (gl) {
+    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s)); return s; };
+    const pr = gl.createProgram();
+    gl.attachShader(pr, sh(gl.VERTEX_SHADER, 'attribute vec2 a; void main(){ gl_Position = vec4(a, 0., 1.); }'));
+    gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FRAG)); gl.linkProgram(pr); gl.useProgram(pr);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer()); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+    for (const k of ['MIN_FILTER', 'MAG_FILTER']) gl.texParameteri(gl.TEXTURE_2D, gl['TEXTURE_' + k], gl.NEAREST);
+    for (const k of ['WRAP_S', 'WRAP_T']) gl.texParameteri(gl.TEXTURE_2D, gl['TEXTURE_' + k], gl.CLAMP_TO_EDGE);
+    U = {}; for (const n of ['uRes', 'uBuf', 'uOff', 'uScale', 'uT', 'uDusk', 'uHy', 'uShore', 'uD', 'uU', 'uFoam', 'uLines', 'uPlate', 'uMask', 'uDuskP', 'uNightP', 'uHave', 'uGrade', 'uPop', 'uMirror']) U[n] = gl.getUniformLocation(pr, n);
+    let loaded = 0, token = 0;
+    const load = (src, unit, extra) => {
+      const img = new Image(), mine = token;
+      img.onload = () => {
+        if (mine !== token || gl.isContextLost()) return;
+        gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
+        for (const k of ['MIN_FILTER', 'MAG_FILTER']) gl.texParameteri(gl.TEXTURE_2D, gl['TEXTURE_' + k], gl.LINEAR);
+        for (const k of ['WRAP_S', 'WRAP_T']) gl.texParameteri(gl.TEXTURE_2D, gl['TEXTURE_' + k], gl.CLAMP_TO_EDGE);
+        gl.activeTexture(gl.TEXTURE0); if (extra) later++; else if (++loaded === 2) { plateReady = true; glc.classList.remove('out'); }
+      };
+      img.src = src;
+    };
+    loadBeach = () => { token++; loaded = 0; later = 0; plateReady = false; load(cur + '.jpg', 1); load(cur + '-mask.jpg', 2); load(cur + '-dusk.jpg', 3, true); load(cur + '-night.jpg', 4, true); };
+    loadBeach();
+  }
+  function paint(now) {
+    if (!U || !plateReady) return;
+    for (let i = 0; i < N; i++) {
+      const e = Math.round(clamp(edge[i] / H, 0, 1) * 65535), w = Math.round(clamp(wet[i] / H, 0, 1) * 65535);
+      lineBytes[i * 4] = e >> 8; lineBytes[i * 4 + 1] = e & 255; lineBytes[i * 4 + 2] = w >> 8; lineBytes[i * 4 + 3] = w & 255;
+    }
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, N, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, lineBytes);
+    gl.viewport(0, 0, glc.width, glc.height);
+    gl.uniform2f(U.uRes, W, H); gl.uniform2f(U.uBuf, glc.width, glc.height); gl.uniform2f(U.uOff, offX, offY);
+    gl.uniform1f(U.uScale, GLS); gl.uniform1f(U.uT, (now - startT) * (calm ? .2 : 1)); gl.uniform1f(U.uDusk, dusk);
+    gl.uniform1f(U.uHy, hy); gl.uniform1f(U.uShore, shore); gl.uniform1f(U.uD, D); gl.uniform1f(U.uU, u); gl.uniform1f(U.uFoam, foamAmt);
+    gl.uniform1i(U.uLines, 0); gl.uniform1i(U.uPlate, 1); gl.uniform1i(U.uMask, 2); gl.uniform1i(U.uDuskP, 3); gl.uniform1i(U.uNightP, 4); gl.uniform1f(U.uHave, later === 2 ? 1 : 0); gl.uniform1f(U.uGrade, B.grade); gl.uniform1f(U.uPop, B.pop || 0); gl.uniform1f(U.uMirror, B.mirror || 0);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+
+  function resize() {
+    DPR = Math.min(2, window.devicePixelRatio || 1); GLS = Math.min(1.5, DPR);
+    W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+    glc.width = Math.round(W * GLS); glc.height = Math.round(H * GLS);
+    u = Math.min(W, H * 1.2); D = Math.max(W, H);
+    // tall screens: horizon at 44 percent. Wide, short screens (a phone on its side): slide the picture up so the sand keeps a third of the height
+    shore = Math.min(H * HFR + (SFR - HFR) * D, H * .66); hy = shore - (SFR - HFR) * D;
+    offX = (W - D) / 2 + pan * (D - W) / 2; offY = hy - HFR * D;
+    xs = []; ys = [];
+    for (let i = 0; i < N; i++) { xs.push(i / (N - 1) * W); ys.push(ysAt(xs[i])); }
+    ysMin = Math.min(...ys); seaH = ysMin - hy;
+    edge = ys.map(y => y + 4); wet = ys.map(y => y + 14);
+  }
+
+  // ---------- waves ----------
+  let waves = [], nextT0 = 0, sinceBig = 0, trails = [];
+  const env = p => p <= 0 || p >= 1 ? 0 : p < RISE ? 1 - Math.pow(1 - p / RISE, 3) : .5 + .5 * Math.cos(Math.PI * (p - RISE) / (1 - RISE));
+
+  function makeWaves(now) {
+    if (nextT0 < now - 4) nextT0 = now + .6;
+    while (nextT0 < now + 1.5) {
+      sinceBig++;
+      const big = sinceBig > 3 + Math.random() * 3; if (big) sinceBig = 0;
+      const rnd = Math.random;
+      const w = { t0: nextT0, dur: 8 + rnd() * 6, reach: Math.min(H, (H - shore) * 2.4) * Math.min(1.25, B.surf) * (big ? .14 + rnd() * .05 : .04 + rnd() * .08), dir: rnd() < .5 ? 1 : -1, seed: rnd() * 20, snapped: false,
+        lag: .6 + rnd() * 2.6, mid: rnd() < .3 ? .2 + rnd() * .6 : -1, bend: rnd() * .35, bf: 1.5 + rnd() * 4, bp: rnd() * 6.3,
+        sh: [[260, 620, .2], [130, 250, .09], [70, 120, .03]].map(([lo, hi, a]) => ({ k: 6.283 / (lo + rnd() * (hi - lo)), p: rnd() * 6.3, a: a * (.5 + rnd() * .8) })) };
+      waves.push(w); if (audio && audio.ctx.state === 'running') { scheduleWave(w, now); w.snd = true; }
+      nextT0 += 6 + Math.random() * 4.5;
+    }
+    waves = waves.filter(w => now < w.t0 + w.dur + 4.5);
+  }
+
+  function computeEdge(now, dt) {
+    for (let i = 0; i < N; i++) {
+      let reach = 0;
+      for (const w of waves) {
+        const x = i / (N - 1);
+        // each wave lands its own way: from one end, or middle first, with a bent front and uneven lobes
+        let along = w.mid >= 0 ? Math.abs(x - w.mid) * 1.6 : (w.dir > 0 ? x : 1 - x);
+        along = Math.max(0, along + w.bend * Math.sin(x * w.bf + w.bp));
+        const e = env((now - w.t0 - w.lag * along) / w.dur);
+        if (e > 0) { let s = .85; for (const h of w.sh) s += h.a * Math.sin(xs[i] * h.k + h.p); reach = Math.max(reach, w.reach * (1 - .7 * ebb) * e * Math.max(.3, s)); }
+      }
+      edge[i] = ys[i] + 4 + 1.6 * Math.sin(now * .7 + i * .14) + 1.4 * Math.sin(now * .43 - i * .31 + 2) + reach;
+      wet[i] = Math.max(edge[i], wet[i] - H * .006 * dt);
+    }
+    let a = 0;
+    for (const w of waves) {
+      const gp = (now - w.t0) / w.dur; if (gp > 0 && gp < 1) a = Math.max(a, gp < RISE ? gp / RISE : (1 - (gp - RISE) / (1 - RISE)) * .6);
+      if (!w.snapped && now > w.t0 + RISE * w.dur + w.lag * .5) { w.snapped = true; trails.push({ y: edge.slice(), born: now, off: Math.random() * 8 }); }
+    }
+    foamAmt = a; trails = trails.filter(t => now - t.born < 5);
+  }
+
+  function drawShoreExtras(now) {
+    for (const w of waves) {
+      const gp = (now - w.t0) / w.dur; if (gp <= 0 || gp >= RISE * .9) continue;
+      const k = gp / RISE, off = (1 - k) * u * .06;
+      c.beginPath(); for (let i = 0; i < N; i++) { const y = ys[i] - off + 2 * Math.sin(i * .28 + w.seed); i ? c.lineTo(xs[i], y) : c.moveTo(xs[i], y); }
+      c.strokeStyle = `rgba(255,244,230,${.45 * Math.sin(Math.PI * k)})`; c.lineWidth = 1.5; c.stroke();
+    }
+    c.lineWidth = 1.6; c.setLineDash([2, 6]);
+    for (const t of trails) { c.lineDashOffset = t.off; c.beginPath(); c.moveTo(xs[0], t.y[0] - 1); for (let i = 1; i < N; i++) c.lineTo(xs[i], t.y[i] - 1); c.strokeStyle = `rgba(255,244,230,${.4 * (1 - (now - t.born) / 5)})`; c.stroke(); }
+    c.setLineDash([]);
+  }
+
+  // ---------- footprints ----------
+  let prints = [], emptySince = 0, side = 1, lastStep = null;
+  const scaleAt = y => .55 + .75 * ((y - ysMin) / (H - ysMin));
+  const col = x => clamp(Math.round(x / W * (N - 1)), 0, N - 1);
+
+  function trail(now, stagger) {
+    let x = W * (.04 + Math.random() * .14), y = shore + (H - shore) * (.72 + Math.random() * .2);
+    let ex = W * (.86 + Math.random() * .18), ey = ysAt(W) + H * (.035 + Math.random() * .04);
+    if (stagger && Math.random() < .5) { [x, ex] = [W - x, W - ex]; ey = ysAt(0) + H * (.035 + Math.random() * .04); }
+    const total = Math.hypot(ex - x, ey - y), ux = (ex - x) / total, uy = (ey - y) / total, ang = Math.atan2(ux, -uy);
+    let go = 0, k = 0, sd = 1;
+    while (go < total) {
+      const px = x + ux * go, py = y + uy * go, s = scaleAt(py), wob = Math.sin(k * .7) * 3;
+      prints.push({ x: px - uy * (6 * s * sd + wob), y: py + ux * (6 * s * sd + wob) * .55, ang, side: sd, alpha: 1, born: stagger ? now + k * .5 : now - 1, under: false });
+      go += 27 * s; sd = -sd; k++;
+    }
+  }
+
+  function updatePrints(now) {
+    for (const p of prints) {
+      if (now < p.born) continue;
+      if (edge[col(p.x)] > p.y + 1) { if (!p.under) { p.under = true; p.alpha *= .38; } } else p.under = false;
+    }
+    prints = prints.filter(p => p.alpha > .07 && p.x > -20 && p.x < W + 20);
+    if (prints.length) emptySince = 0; else { emptySince = emptySince || now; if (now - emptySince > 18) { trail(now, true); emptySince = 0; } }
+  }
+
+  let glowC = null;
+  const glowPic = () => { if (glowC) return glowC; glowC = document.createElement('canvas'); glowC.width = glowC.height = 96; const g = glowC.getContext('2d'), gr = g.createRadialGradient(48, 48, 2, 48, 48, 48);
+    gr.addColorStop(0, 'rgba(170,250,255,.95)'); gr.addColorStop(.3, 'rgba(110,240,255,.6)'); gr.addColorStop(1, 'rgba(90,235,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, 96, 96); return glowC; };
+  function drawPrints(now) {
+    for (const p of prints) {
+      const a = p.alpha * clamp((now - p.born) / .4, 0, 1) * (p.under ? .3 : 1); if (a <= 0) continue;
+      const s = scaleAt(p.y);
+      c.save(); c.translate(p.x, p.y); c.scale(1, .55); c.rotate(p.ang);
+      // at night the sand answers a step with a moment of blue light, as the wave's edge does
+      if (p.glow) { const gl2 = clamp(1 - (now - p.born) / 5, 0, 1); if (gl2 > 0) { const r = 17 * s, a0 = c.globalAlpha; c.globalAlpha = gl2; c.drawImage(glowPic(), -r, -r * 1.7, 2 * r, 3.4 * r); c.globalAlpha = a0; } }
+      c.fillStyle = `rgba(255,214,180,${a * .16})`;
+      c.beginPath(); c.ellipse(0, -2.2 * s, 4.6 * s, 6.7 * s, 0, 0, 7); c.fill();
+      c.fillStyle = sil(a * .6);
+      c.beginPath(); c.ellipse(0, -3.5 * s, 4.4 * s, 6.5 * s, 0, 0, 7); c.fill();
+      c.beginPath(); c.ellipse(.6 * p.side * s, 6.6 * s, 3.2 * s, 3.9 * s, 0, 0, 7); c.fill();
+      c.restore();
+    }
+  }
+
+  function step(x, y) {
+    if (y < edge[col(x)] + 3) return;
+    const s = scaleAt(y);
+    if (lastStep && Math.hypot(x - lastStep.x, y - lastStep.y) < 27 * s) return;
+    const ang = lastStep ? Math.atan2(x - lastStep.x, -(y - lastStep.y) / .55) : .9;
+    side = -side;
+    prints.push({ x: x + Math.cos(ang) * 6 * s * side, y: y + Math.sin(ang) * 3.3 * s * side, ang, side, alpha: 1, born: performance.now() / 1000 - .2, under: false, glow: dusk > .75 });
+    lastStep = { x, y };
+  }
+  const at = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  let down = false, shellTap = -9, swipeX = null, mode = null, g0 = null, gLast = 0, walked = 0;
+  // walking: the beach slides past and your own steps are left in the sand behind you
+  function panBy(dx) {
+    if (D <= W + 2) return 0;
+    const to = clamp(offX + dx, W - D, 0), moved = to - offX;
+    offX = to; pan = (offX - (W - D) / 2) / ((D - W) / 2);
+    for (const p of prints) p.x += moved;
+    return moved;
+  }
+  function walkStep(moved) {
+    const y = shore + (H - shore) * .58, s = scaleAt(y), ang = moved < 0 ? Math.PI / 2 : -Math.PI / 2;
+    walked += Math.abs(moved);
+    while (walked > 27 * s) { walked -= 27 * s; side = -side; prints.push({ x: W / 2, y: y + 3.3 * s * side * (moved < 0 ? 1 : -1), ang, side, alpha: 1, born: performance.now() / 1000 - .2, under: false, glow: dusk > .75 }); }
+  }
+  let pid = null;
+  cv.addEventListener('contextmenu', () => { down = false; mode = null; swipeX = null; pid = null; });
+  cv.addEventListener('pointerdown', e => {
+    if (e.button || (e.pointerType === 'mouse' && e.ctrlKey)) return;
+    const [x, y] = at(e);
+    const [ux, uy] = sunAt();
+    const mx = offX + B.moon[0] * D, my = offY + B.moon[1] * D;
+    // a boat beside the sun: the tap goes to whichever it is nearer
+    { const bi = boatAt(x, y); if (bi >= 0 && !(Math.hypot(x - ux, y - uy) < 46 && Math.abs(x - ux) < Math.abs(x - (offX + BOATS[bi][0] * D)))) { knock(bi, x); return; } }
+    if (Math.hypot(x - ux, y - uy) < 46 || (dusk > .75 && Math.hypot(x - mx, y - my) < 46)) { sunTap = performance.now() / 1000; duskStep = duskStep === null ? (dusk > .8 ? 0 : dusk < .3 ? .5 : 1) : duskStep >= 1 ? 0 : duskStep + .5; return; }
+    if (comb(x, y)) return;
+    if (tapWorld(x, y)) return;
+    if (y < hy) { if (PROTO) swipeX = x; return; }
+    if (down) return;
+    pid = e.pointerId; down = true; lastStep = null; mode = null; g0 = [x, y]; gLast = x;
+  });
+  cv.addEventListener('pointermove', e => {
+    if (!down || e.pointerId !== pid) return;
+    if (e.pointerType === 'mouse' && !(e.buttons & 1)) { down = false; mode = null; pid = null; return; }
+    const [x, y] = at(e);
+    if (!mode) {
+      const dx = x - g0[0], dy = y - g0[1]; if (Math.hypot(dx, dy) < 10) return;
+      mode = Math.abs(dx) > Math.abs(dy) * 1.2 && D > W + 2 ? 'walk' : 'draw';
+      if (mode === 'draw') step(...g0);
+    }
+    if (mode === 'walk') { const m = panBy(x - gLast); gLast = x; if (m) walkStep(m); } else step(x, y);
+  });
+  addEventListener('pointerup', e => {
+    if (down && e.pointerId === pid) { if (!mode && g0) step(...g0); down = false; mode = null; pid = null; }
+    // prototype only: a sideways swipe across the sky moves to the next or previous beach
+    if (swipeX !== null) { const dx = at(e)[0] - swipeX; swipeX = null; if (Math.abs(dx) > 70) setBeach(KEYS[(KEYS.indexOf(cur) + (dx < 0 ? 1 : KEYS.length - 1)) % KEYS.length]); }
+  });
+  addEventListener('pointercancel', e => { if (e.pointerId === pid) { down = false; mode = null; pid = null; } });
+
+  // ---------- sound: all of it is made here, nothing recorded ----------
+  let audio = null, soundOn = true;
+
+  // a silent looping clip: on an iPhone it moves the page's sound off the ringer switch
+  function silentClip() {
+    const n = 8000, b = new Uint8Array(44 + n), v = new DataView(b.buffer);
+    'RIFF'.split('').forEach((ch, i) => b[i] = ch.charCodeAt(0)); v.setUint32(4, 36 + n, true);
+    'WAVEfmt '.split('').forEach((ch, i) => b[8 + i] = ch.charCodeAt(0));
+    v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true);
+    'data'.split('').forEach((ch, i) => b[36 + i] = ch.charCodeAt(0)); v.setUint32(40, n, true); b.fill(128, 44);
+    const el = new Audio(URL.createObjectURL(new Blob([b], { type: 'audio/wav' }))); el.loop = true; el.setAttribute('playsinline', '');
+    return el;
+  }
+  let hush = null;
+  const awake = () => { try { navigator.wakeLock && navigator.wakeLock.request('screen').catch(() => {}); } catch (e) {} };
+  function startAudio() {
+    if (audio) { if (audio.ctx.state !== 'running') audio.ctx.resume().catch(() => {}); if (hush && hush.paused) { try { const p = hush.play(); p && p.catch(() => {}); } catch (e) {} } awake(); return; }
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+    try { hush = silentClip(); const pl = hush.play(); pl && pl.catch(() => {}); } catch (e) {}
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    const ctx = new AC(), len = ctx.sampleRate * 5, buf = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let ch = 0; ch < 2; ch++) { const dta = buf.getChannelData(ch); let last = 0; for (let i = 0; i < len; i++) { const wh = Math.random() * 2 - 1; last = (last + .04 * wh) / 1.04; dta[i] = wh * .55 + last * 6; } }
+    const master = ctx.createGain(); master.gain.value = 0;
+    const comp = ctx.createDynamicsCompressor(); master.connect(comp); comp.connect(ctx.destination);
+    master.gain.setTargetAtTime(.9, ctx.currentTime, 1.2);
+    const bed = ctx.createBufferSource(); bed.buffer = buf; bed.loop = true;
+    const bedLp = ctx.createBiquadFilter(); bedLp.type = 'lowpass'; bedLp.frequency.value = 460;
+    const bedG = ctx.createGain(); bedG.gain.value = .05;
+    bed.connect(bedLp); bedLp.connect(bedG); bedG.connect(master); bed.start();
+    audio = { ctx, buf, master, bedG };
+    const p0 = ctx.resume && ctx.resume(); p0 && p0.catch && p0.catch(() => {});
+    setInterval(() => { if (ctx.state === 'running') bedG.gain.setTargetAtTime(.035 + Math.random() * .04, ctx.currentTime, 3); }, 5000);
+    const now = performance.now() / 1000;
+    // waves get their sound only while the audio clock is running; when it starts, or comes back, the ones still to come are caught up
+    const catchUp = () => { if (ctx.state !== 'running') return; const n = performance.now() / 1000; for (const w of waves) if (!w.snd && w.t0 > n) { scheduleWave(w, n); w.snd = true; } };
+    ctx.addEventListener('statechange', catchUp); catchUp();
+    setTimeout(birdLoop, 9000);
+    awake();
+  }
+  function toggleSound() {
+    soundOn = !soundOn; audio.master.gain.setTargetAtTime(soundOn ? .9 : 0, audio.ctx.currentTime, .25);
+  }
+  for (const ev of ['pointerdown', 'pointerup', 'touchend', 'mousedown', 'click']) addEventListener(ev, startAudio, { passive: true });
+  window.__beach = () => ({ started: !!audio, state: audio && audio.ctx.state, soundOn, gain: audio && audio.master.gain.value, waves: waves.length, drift: drift.map(f => ({ state: f.state, type: f.type, kind: f.kind, d: +f.d.toFixed(3), pos: findPos(f) })), nextDrift: nextDrift - performance.now() / 1000, ebb, moon: +moonFull().toFixed(2), day: dayKinds(), basket: basketAt(), shelf: shelf.length, pan, prints: prints.length, lang: LANG, crab: crab && { phase: crab.phase, pos: crabPos() }, flash: performance.now() / 1000 - flashAt, star: !!star, spouts: spouts.length, rcrabs: rcrabs.map(k => [k.px, k.py, k.flee]), dusk: +dusk.toFixed(3), view: [offX, offY, D] });
+  addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !(e.target.closest && e.target.closest('button, a, select, textarea, input'))) { audio ? toggleSound() : startAudio(); } });
+
+  function scheduleWave(w, now) {
+    const { ctx, buf, master } = audio, at = ctx.currentTime + Math.max(0, w.t0 - now), rise = RISE * w.dur, end = at + w.dur;
+    const s = clamp(w.reach / (Math.min(H, (H - shore) * 2.4) * .19), .25, 1);
+    const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+    const pan = ctx.createStereoPanner ? ctx.createStereoPanner() : ctx.createGain();
+    if (pan.pan) { pan.pan.setValueAtTime(-.65 * w.dir, at); pan.pan.linearRampToValueAtTime(.65 * w.dir, at + rise + w.lag + 1.5); }
+    const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.setValueAtTime(380, at); hp.frequency.linearRampToValueAtTime(1900, end);
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(800, at); lp.frequency.exponentialRampToValueAtTime(2200 + 3800 * s, at + rise); lp.frequency.exponentialRampToValueAtTime(1500, end);
+    const g = ctx.createGain(); g.gain.setValueAtTime(.0001, at); g.gain.exponentialRampToValueAtTime(.05, at + rise * .55); g.gain.exponentialRampToValueAtTime(.07 + .2 * s, at + rise); g.gain.setTargetAtTime(.0001, at + rise, (w.dur - rise) / 3.4);
+    src.connect(hp); hp.connect(lp); lp.connect(g); g.connect(pan);
+    const lp2 = ctx.createBiquadFilter(); lp2.type = 'lowpass'; lp2.frequency.setValueAtTime(170, at); lp2.frequency.linearRampToValueAtTime(340, at + rise);
+    const g2 = ctx.createGain(); g2.gain.setValueAtTime(.0001, at); g2.gain.exponentialRampToValueAtTime(.1 + .3 * s, at + rise * .8); g2.gain.setTargetAtTime(.0001, at + rise * .85, .7);
+    src.connect(lp2); lp2.connect(g2); g2.connect(pan);
+    pan.connect(master);
+    src.start(at, Math.random() * 4); src.stop(end + 1.5);
+  }
+
+  function bird() {
+    const { ctx, master } = audio, at = ctx.currentTime + .1, f = 2500 + Math.random() * 600;
+    const out = ctx.createGain(); out.gain.value = .5 + Math.random() * .5;
+    const pan = ctx.createStereoPanner ? ctx.createStereoPanner() : ctx.createGain(); if (pan.pan) pan.pan.value = Math.random() * 1.6 - .8;
+    const dl = ctx.createDelay(1); dl.delayTime.value = .21 + Math.random() * .08;
+    const fb = ctx.createGain(); fb.gain.value = .32; const dlp = ctx.createBiquadFilter(); dlp.type = 'lowpass'; dlp.frequency.value = 2600;
+    out.connect(pan); pan.connect(master); out.connect(dl); dl.connect(dlp); dlp.connect(fb); fb.connect(dl); dlp.connect(pan);
+    const note = (t, f1, f2, dur) => {
+      const o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine';
+      o.frequency.setValueAtTime(f1, t); o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.03, t + .018); g.gain.setTargetAtTime(.0001, t + dur * .6, dur * .22);
+      o.connect(g); g.connect(out); o.start(t); o.stop(t + dur + .4);
+    };
+    if (Math.random() < .6) { note(at, f, f * 1.03, .08); note(at + .14, f * 1.1, f * 1.4, .22); if (Math.random() < .4) { note(at + .9, f, f * 1.03, .08); note(at + 1.04, f * 1.1, f * 1.4, .22); } }
+    else { for (let k = 0; k < 3; k++) note(at + k * .17, f * (1.3 - k * .09), f * (1.2 - k * .09), .09); }
+    setTimeout(() => { try { out.disconnect(); pan.disconnect(); fb.disconnect(); } catch (e) {} }, 6000);
+  }
+  function birdLoop() {
+    if (B.bird && soundOn && !document.hidden && audio.ctx.state === 'running') bird();
+    setTimeout(birdLoop, 22000 + Math.random() * 38000);
+  }
+  document.addEventListener('visibilitychange', () => { if (audio) { const p = document.hidden ? audio.ctx.suspend() : audio.ctx.resume(); p && p.catch && p.catch(() => {}); } if (!document.hidden) { last = performance.now() / 1000; awake(); setTimeout(lostCheck, 1200); } });
+
+  // ---------- beachcombing: things the waves bring now and then, a basket to carry it, a shelf to keep it ----------
+  /*WORDS*/const WORDS = {"en":{"line":"Things wash up now and then. Take them or leave them.","how":"How it was made","sound":"Sound","on":"on","off":"off","reply":"Send one back","hint":"Up to 100 characters. It goes by email to Kahakai; we read each one before it goes in a bottle.","send":"Send","notes":["I came here to stop thinking. It worked for about an hour, which is a record.","If you find this, eat something good tonight and call your sister.","Day 41. Still no plan. The plan might be the problem.","My grandfather taught me to whistle on this beach. I never got good at it.","To whoever is reading: the green flash is real. Keep watching right to the end.","We named the dog after this bay. She hates water.","I wrote a whole song here and then the tide took my notebook. It was probably the best one.","Leaving tomorrow. Leaving the shell where I found it.","Dear future me: you were happy here. Check the photo if you forget.","There is no trick. You just have to look.","The old sailors say the boats will answer if you knock.","In winter, watch the horizon. They come back every year, and you can see them breathe."]},"es":{"line":"De vez en cuando el mar deja algo. Ll\u00e9vatelo o d\u00e9jalo.","how":"C\u00f3mo se hizo","sound":"Sonido","on":"activado","off":"desactivado","reply":"Enviar una de vuelta","hint":"Hasta 100 caracteres. Se env\u00eda por correo a Kahakai; leemos cada una antes de meterla en una botella.","send":"Enviar","notes":["Vine aqu\u00ed para dejar de pensar. Funcion\u00f3 durante una hora, m\u00e1s o menos, lo cual es un r\u00e9cord.","Si encuentras esto, cena algo rico esta noche y llama a tu hermana.","D\u00eda 41. Sigo sin plan. Puede que el plan sea el problema.","Mi abuelo me ense\u00f1\u00f3 a silbar en esta playa. Nunca se me dio bien.","A quien lea esto: el rayo verde existe. Sigue mirando hasta el final.","Le pusimos a la perra el nombre de esta bah\u00eda. Odia el agua.","Escrib\u00ed aqu\u00ed una canci\u00f3n entera y luego la marea se llev\u00f3 mi cuaderno. Seguramente era la mejor.","Me voy ma\u00f1ana. Dejo la concha donde la encontr\u00e9.","Querido yo del futuro: aqu\u00ed fuiste feliz. Mira la foto si se te olvida.","No hay truco. Solo hay que mirar.","Los viejos marineros dicen que los barcos contestan si llamas con los nudillos.","En invierno, mira el horizonte. Vuelven cada a\u00f1o, y se las ve respirar."]},"fr":{"line":"De temps en temps, la mer d\u00e9pose quelque chose. Prenez-le ou laissez-le.","how":"Comment c'est fait","sound":"Son","on":"activ\u00e9","off":"coup\u00e9","reply":"En renvoyer une","hint":"100 caract\u00e8res au plus. Le message part par e-mail chez Kahakai ; nous lisons chacun avant de le mettre en bouteille.","send":"Envoyer","notes":["Je suis venu ici pour arr\u00eater de penser. \u00c7a a march\u00e9 une heure environ, ce qui est un record.","Si tu trouves ceci, mange quelque chose de bon ce soir et appelle ta s\u0153ur.","Jour 41. Toujours pas de plan. C'est peut-\u00eatre le plan, le probl\u00e8me.","Mon grand-p\u00e8re m'a appris \u00e0 siffler sur cette plage. Je n'ai jamais \u00e9t\u00e9 dou\u00e9.","\u00c0 qui lira ceci : le rayon vert existe. Regarde bien jusqu'au bout.","On a donn\u00e9 \u00e0 la chienne le nom de cette baie. Elle d\u00e9teste l'eau.","J'ai \u00e9crit toute une chanson ici, puis la mar\u00e9e a emport\u00e9 mon carnet. C'\u00e9tait s\u00fbrement la meilleure.","Je pars demain. Je laisse le coquillage l\u00e0 o\u00f9 je l'ai trouv\u00e9.","Cher moi du futur : tu as \u00e9t\u00e9 heureux ici. Regarde la photo si tu oublies.","Il n'y a pas de truc. Il suffit de regarder.","Les vieux marins disent que les bateaux r\u00e9pondent si l'on frappe.","En hiver, regarde l'horizon. Elles reviennent chaque ann\u00e9e, et on les voit respirer."]},"de":{"line":"Ab und zu sp\u00fclt das Meer etwas an. Nimm es mit oder lass es liegen.","how":"Wie es entstand","sound":"Ton","on":"an","off":"aus","reply":"Eine zur\u00fcckschicken","hint":"Bis zu 100 Zeichen. Die Nachricht geht per E-Mail an Kahakai; wir lesen jede, bevor sie in eine Flasche kommt.","send":"Senden","notes":["Ich bin hergekommen, um mit dem Denken aufzuh\u00f6ren. Es hat etwa eine Stunde geklappt, das ist Rekord.","Wenn du das findest, iss heute Abend etwas Gutes und ruf deine Schwester an.","Tag 41. Immer noch kein Plan. Vielleicht ist der Plan das Problem.","Mein Gro\u00dfvater hat mir an diesem Strand das Pfeifen beigebracht. Gut bin ich nie geworden.","Wer auch immer das liest: Den gr\u00fcnen Blitz gibt es wirklich. Schau bis ganz zum Schluss hin.","Wir haben die H\u00fcndin nach dieser Bucht benannt. Sie hasst Wasser.","Ich habe hier ein ganzes Lied geschrieben, und dann hat die Flut mein Notizbuch mitgenommen. Es war wohl mein bestes.","Morgen reise ich ab. Die Muschel lasse ich da, wo ich sie gefunden habe.","Liebes zuk\u00fcnftiges Ich: Du warst hier gl\u00fccklich. Sieh dir das Foto an, falls du es vergisst.","Es gibt keinen Trick. Man muss nur hinsehen.","Die alten Seeleute sagen, die Boote antworten, wenn man anklopft.","Schau im Winter auf den Horizont. Sie kommen jedes Jahr wieder, und man sieht sie atmen."]},"it":{"line":"Ogni tanto il mare lascia qualcosa. Prendilo o lascialo l\u00ec.","how":"Come \u00e8 stato fatto","sound":"Suono","on":"attivo","off":"disattivato","reply":"Mandane una anche tu","hint":"Fino a 100 caratteri. Parte per e-mail a Kahakai; leggiamo ogni messaggio prima di metterlo in una bottiglia.","send":"Invia","notes":["Sono venuto qui per smettere di pensare. Ha funzionato per un'ora circa, ed \u00e8 un record.","Se trovi questo messaggio, stasera mangia qualcosa di buono e chiama tua sorella.","Giorno 41. Ancora nessun piano. Forse il problema \u00e8 il piano.","Mio nonno mi ha insegnato a fischiare su questa spiaggia. Non sono mai diventato bravo.","A chiunque legga: il raggio verde esiste. Continua a guardare fino alla fine.","Abbiamo dato alla cagnolina il nome di questa baia. Odia l'acqua.","Qui ho scritto una canzone intera, poi la marea si \u00e8 presa il quaderno. Probabilmente era la migliore.","Parto domani. Lascio la conchiglia dove l'ho trovata.","Caro me del futuro: qui sei stato felice. Guarda la foto se te lo dimentichi.","Non c'\u00e8 nessun trucco. Basta guardare.","I vecchi marinai dicono che le barche rispondono, se bussi.","D'inverno guarda l'orizzonte. Tornano ogni anno, e le vedi respirare."]},"pt":{"line":"De vez em quando o mar traz alguma coisa. Leve ou deixe l\u00e1.","how":"Como foi feito","sound":"Som","on":"ligado","off":"desligado","reply":"Mandar uma de volta","hint":"At\u00e9 100 caracteres. Vai por e-mail para a Kahakai; lemos cada uma antes de colocar numa garrafa.","send":"Enviar","notes":["Vim aqui para parar de pensar. Funcionou por mais ou menos uma hora, o que \u00e9 um recorde.","Se voc\u00ea achar isto, coma algo gostoso hoje \u00e0 noite e ligue para a sua irm\u00e3.","Dia 41. Ainda sem plano. Talvez o plano seja o problema.","Meu av\u00f4 me ensinou a assobiar nesta praia. Nunca fiquei bom nisso.","A quem estiver lendo: o raio verde existe. Continue olhando at\u00e9 o fim.","Demos \u00e0 cachorra o nome desta ba\u00eda. Ela odeia \u00e1gua.","Escrevi uma m\u00fasica inteira aqui e depois a mar\u00e9 levou meu caderno. Provavelmente era a melhor.","Vou embora amanh\u00e3. Deixo a concha onde a encontrei.","Querido eu do futuro: voc\u00ea foi feliz aqui. Olhe a foto se esquecer.","N\u00e3o tem truque. \u00c9 s\u00f3 olhar.","Os velhos marinheiros dizem que os barcos respondem se voc\u00ea der uma batidinha.","No inverno, olhe para o horizonte. Elas voltam todo ano, e d\u00e1 para v\u00ea-las respirar."]},"ja":{"line":"\u3068\u304d\u3069\u304d\u3001\u6ce2\u304c\u4f55\u304b\u3092\u904b\u3093\u3067\u304d\u307e\u3059\u3002\u62fe\u3063\u3066\u3082\u3001\u305d\u306e\u307e\u307e\u3067\u3082\u3002","how":"\u5236\u4f5c\u306b\u3064\u3044\u3066","sound":"\u97f3","on":"\u30aa\u30f3","off":"\u30aa\u30d5","reply":"\u8fd4\u4e8b\u3092\u6d41\u3059","hint":"100\u6587\u5b57\u307e\u3067\u3002\u30e1\u30fc\u30eb\u3067Kahakai\u306b\u5c4a\u304d\u307e\u3059\u3002\u74f6\u306b\u5165\u308c\u308b\u524d\u306b\u3001\u3059\u3079\u3066\u8aad\u307f\u307e\u3059\u3002","send":"\u9001\u308b","notes":["\u8003\u3048\u308b\u306e\u3092\u3084\u3081\u305f\u304f\u3066\u3001\u3053\u3053\u306b\u6765\u305f\u3002\u4e00\u6642\u9593\u304f\u3089\u3044\u306f\u3046\u307e\u304f\u3044\u3063\u305f\u3002\u81ea\u5df1\u30d9\u30b9\u30c8\u3060\u3002","\u3053\u308c\u3092\u898b\u3064\u3051\u305f\u3089\u3001\u4eca\u591c\u306f\u304a\u3044\u3057\u3044\u3082\u306e\u3092\u98df\u3079\u3066\u3001\u304a\u59c9\u3055\u3093\u306b\u96fb\u8a71\u3057\u3066\u3002","41\u65e5\u76ee\u3002\u307e\u3060\u8a08\u753b\u306f\u306a\u3044\u3002\u8a08\u753b\u3053\u305d\u304c\u554f\u984c\u306a\u306e\u304b\u3082\u3057\u308c\u306a\u3044\u3002","\u7956\u7236\u306f\u3053\u306e\u6d5c\u3067\u53e3\u7b1b\u3092\u6559\u3048\u3066\u304f\u308c\u305f\u3002\u7d50\u5c40\u3046\u307e\u304f\u306a\u3089\u306a\u304b\u3063\u305f\u3002","\u3053\u308c\u3092\u8aad\u3093\u3067\u3044\u308b\u4eba\u3078\u3002\u30b0\u30ea\u30fc\u30f3\u30d5\u30e9\u30c3\u30b7\u30e5\u306f\u672c\u5f53\u306b\u3042\u308b\u3002\u6700\u5f8c\u306e\u6700\u5f8c\u307e\u3067\u898b\u3066\u3044\u3066\u3002","\u3046\u3061\u306e\u72ac\u306b\u3001\u3053\u306e\u6e7e\u306e\u540d\u524d\u3092\u3064\u3051\u305f\u3002\u306a\u306e\u306b\u6c34\u304c\u5927\u5acc\u3044\u3002","\u3053\u3053\u3067\u4e00\u66f2\u307e\u308b\u3054\u3068\u66f8\u3044\u305f\u306e\u306b\u3001\u6f6e\u304c\u30ce\u30fc\u30c8\u3092\u6301\u3063\u3066\u3044\u3063\u305f\u3002\u305f\u3076\u3093\u6700\u9ad8\u306e\u4e00\u66f2\u3060\u3063\u305f\u3002","\u660e\u65e5\u3053\u3053\u3092\u767a\u3064\u3002\u8c9d\u6bbb\u306f\u898b\u3064\u3051\u305f\u5834\u6240\u306b\u7f6e\u3044\u3066\u3044\u304f\u3002","\u672a\u6765\u306e\u81ea\u5206\u3078\u3002\u541b\u306f\u3053\u3053\u3067\u5e78\u305b\u3060\u3063\u305f\u3002\u5fd8\u308c\u305f\u3089\u5199\u771f\u3092\u898b\u3066\u3002","\u30b3\u30c4\u306a\u3093\u3066\u306a\u3044\u3002\u305f\u3060\u3001\u3088\u304f\u898b\u308b\u3053\u3068\u3002","\u5e74\u5bc4\u308a\u306e\u8239\u4e57\u308a\u306f\u8a00\u3046\u3002\u30ce\u30c3\u30af\u3059\u308c\u3070\u3001\u821f\u306f\u8fd4\u4e8b\u3092\u3059\u308b\u3063\u3066\u3002","\u51ac\u306f\u6c34\u5e73\u7dda\u3092\u898b\u3066\u3044\u3066\u3002\u6bce\u5e74\u5e30\u3063\u3066\u304f\u308b\u3002\u606f\u3092\u3059\u308b\u306e\u304c\u898b\u3048\u308b\u3088\u3002"]},"ko":{"line":"\uac00\ub054 \ud30c\ub3c4\uac00 \ubb34\uc5b8\uac00\ub97c \uc2e4\uc5b4 \uc635\ub2c8\ub2e4. \uc8fc\uc6cc\ub3c4 \uc88b\uace0 \uadf8\ub0e5 \ub450\uc5b4\ub3c4 \uc88b\uc2b5\ub2c8\ub2e4.","how":"\ub9cc\ub4e0 \ubc29\ubc95","sound":"\uc18c\ub9ac","on":"\ucf2c","off":"\ub054","reply":"\ub2f5\uc7a5 \ub744\uc6b0\uae30","hint":"100\uc790\uae4c\uc9c0. \uc774\uba54\uc77c\ub85c Kahakai\uc5d0 \uc804\ub2ec\ub418\uba70, \ubcd1\uc5d0 \ub123\uae30 \uc804\uc5d0 \ubaa8\ub450 \uc77d\uc2b5\ub2c8\ub2e4.","send":"\ubcf4\ub0b4\uae30","notes":["\uc0dd\uac01\uc744 \uba48\ucd94\ub824\uace0 \uc5ec\uae30 \uc654\ub2e4. \ud55c \uc2dc\uac04\ucbe4\uc740 \uc131\uacf5\ud588\ub2e4. \ub0b4 \ucd5c\uace0 \uae30\ub85d\uc774\ub2e4.","\uc774\uac78 \ubc1c\uacac\ud588\ub2e4\uba74 \uc624\ub298 \uc800\ub141\uc5d4 \ub9db\uc788\ub294 \uac78 \uba39\uace0 \uc5ec\ub3d9\uc0dd\uc5d0\uac8c \uc804\ud654\ud574\uc694.","41\uc77c\uc9f8. \uc544\uc9c1 \uacc4\ud68d\uc774 \uc5c6\ub2e4. \uc5b4\uca4c\uba74 \uacc4\ud68d\uc774 \ubb38\uc81c\uc77c\uc9c0\ub3c4.","\ud560\uc544\ubc84\uc9c0\uac00 \uc774 \ud574\ubcc0\uc5d0\uc11c \ud718\ud30c\ub78c\uc744 \uac00\ub974\uccd0 \uc8fc\uc168\ub2e4. \ub05d\ub0b4 \uc798 \ubd88\uc9c0\ub294 \ubabb\ud588\ub2e4.","\uc774 \uae00\uc744 \uc77d\ub294 \ubd84\uaed8: \ub179\uc0c9 \uc12c\uad11\uc740 \uc9c4\uc9dc \uc788\uc5b4\uc694. \ub9c8\uc9c0\ub9c9 \uc21c\uac04\uae4c\uc9c0 \uc9c0\ucf1c\ubcf4\uc138\uc694.","\uc6b0\ub9ac \uac1c \uc774\ub984\uc744 \uc774 \ub9cc\uc5d0\uc11c \ub530\uc654\ub2e4. \uadf8 \uc560\ub294 \ubb3c\uc744 \uc2eb\uc5b4\ud55c\ub2e4.","\uc5ec\uae30\uc11c \ub178\ub798 \ud55c \uace1\uc744 \ub2e4 \uc37c\ub294\ub370 \ubc00\ubb3c\uc774 \uacf5\ucc45\uc744 \uac00\uc838\uac14\ub2e4. \uc544\ub9c8 \ucd5c\uace0\uc758 \uace1\uc774\uc5c8\uc744 \uac70\ub2e4.","\ub0b4\uc77c \ub5a0\ub09c\ub2e4. \uc870\uac1c\uaecd\ub370\uae30\ub294 \uc8fc\uc6b4 \uc790\ub9ac\uc5d0 \ub450\uace0 \uac04\ub2e4.","\ubbf8\ub798\uc758 \ub098\uc5d0\uac8c: \ub10c \uc5ec\uae30\uc11c \ud589\ubcf5\ud588\uc5b4. \uc78a\uc73c\uba74 \uc0ac\uc9c4\uc744 \ubd10.","\ube44\uacb0\uc740 \uc5c6\ub2e4. \uadf8\ub0e5 \uc798 \ubcf4\uba74 \ub41c\ub2e4.","\ub299\uc740 \ubc43\uc0ac\ub78c\ub4e4 \ub9d0\ub85c\ub294, \ub450\ub4dc\ub9ac\uba74 \ubc30\uac00 \ub300\ub2f5\ud55c\ub2e4\uace0 \ud55c\ub2e4.","\uaca8\uc6b8\uc5d4 \uc218\ud3c9\uc120\uc744 \ubd10\uc694. \ud574\ub9c8\ub2e4 \ub3cc\uc544\uc624\uace0, \uc228 \uc26c\ub294 \uac8c \ubcf4\uc5ec\uc694."]},"zh-Hans":{"line":"\u6d77\u6d6a\u5076\u5c14\u4f1a\u9001\u6765\u4e9b\u4ec0\u4e48\u3002\u6361\u8d70\u4e5f\u597d\uff0c\u7559\u4e0b\u4e5f\u597d\u3002","how":"\u5236\u4f5c\u8bf4\u660e","sound":"\u58f0\u97f3","on":"\u5f00","off":"\u5173","reply":"\u56de\u4e00\u5c01","hint":"\u6700\u591a100\u4e2a\u5b57\u3002\u901a\u8fc7\u7535\u5b50\u90ae\u4ef6\u53d1\u7ed9 Kahakai\uff1b\u6bcf\u4e00\u5c01\u6211\u4eec\u90fd\u4f1a\u5148\u8bfb\u8fc7\uff0c\u518d\u88c5\u8fdb\u74f6\u5b50\u3002","send":"\u53d1\u9001","notes":["\u6211\u6765\u8fd9\u91cc\u662f\u4e3a\u4e86\u4e0d\u518d\u80e1\u601d\u4e71\u60f3\u3002\u5927\u6982\u7ba1\u7528\u4e86\u4e00\u4e2a\u5c0f\u65f6\uff0c\u8fd9\u5df2\u7ecf\u7834\u7eaa\u5f55\u4e86\u3002","\u5982\u679c\u4f60\u6361\u5230\u8fd9\u5c01\u4fe1\uff0c\u4eca\u665a\u5403\u70b9\u597d\u7684\uff0c\u518d\u7ed9\u4f60\u59d0\u59d0\u6253\u4e2a\u7535\u8bdd\u3002","\u7b2c41\u5929\u3002\u8fd8\u662f\u6ca1\u6709\u8ba1\u5212\u3002\u4e5f\u8bb8\u95ee\u9898\u5c31\u51fa\u5728\u8ba1\u5212\u4e0a\u3002","\u7237\u7237\u5728\u8fd9\u7247\u6d77\u6ee9\u4e0a\u6559\u6211\u5439\u53e3\u54e8\u3002\u6211\u5230\u73b0\u5728\u4e5f\u5439\u4e0d\u597d\u3002","\u81f4\u8bfb\u5230\u8fd9\u5c01\u4fe1\u7684\u4eba\uff1a\u7eff\u95ea\u662f\u771f\u7684\u3002\u4e00\u5b9a\u8981\u770b\u5230\u6700\u540e\u4e00\u523b\u3002","\u6211\u4eec\u7528\u8fd9\u4e2a\u6d77\u6e7e\u7684\u540d\u5b57\u7ed9\u72d7\u8d77\u4e86\u540d\u3002\u5979\u8ba8\u538c\u6c34\u3002","\u6211\u5728\u8fd9\u91cc\u5199\u5b8c\u4e86\u4e00\u6574\u9996\u6b4c\uff0c\u7136\u540e\u6f6e\u6c34\u5e26\u8d70\u4e86\u6211\u7684\u672c\u5b50\u3002\u90a3\u5927\u6982\u662f\u6211\u6700\u597d\u7684\u4e00\u9996\u3002","\u660e\u5929\u5c31\u8d70\u4e86\u3002\u8d1d\u58f3\u7559\u5728\u6211\u627e\u5230\u5b83\u7684\u5730\u65b9\u3002","\u4eb2\u7231\u7684\u672a\u6765\u7684\u6211\uff1a\u4f60\u5728\u8fd9\u91cc\u5feb\u4e50\u8fc7\u3002\u8981\u662f\u5fd8\u4e86\uff0c\u5c31\u770b\u770b\u90a3\u5f20\u7167\u7247\u3002","\u6ca1\u6709\u4ec0\u4e48\u8bc0\u7a8d\u3002\u7528\u5fc3\u770b\u5c31\u884c\u4e86\u3002","\u8001\u6c34\u624b\u4eec\u8bf4\uff0c\u6572\u4e00\u6572\uff0c\u8239\u4f1a\u56de\u5e94\u4f60\u3002","\u51ac\u5929\u7684\u65f6\u5019\uff0c\u591a\u770b\u770b\u6d77\u5e73\u7ebf\u3002\u5b83\u4eec\u6bcf\u5e74\u90fd\u4f1a\u56de\u6765\uff0c\u4f60\u80fd\u770b\u89c1\u5b83\u4eec\u547c\u5438\u3002"]},"zh-Hant":{"line":"\u6d77\u6d6a\u5076\u723e\u6703\u9001\u4f86\u4e9b\u4ec0\u9ebc\u3002\u64bf\u8d70\u4e5f\u597d\uff0c\u7559\u4e0b\u4e5f\u597d\u3002","how":"\u88fd\u4f5c\u8aaa\u660e","sound":"\u8072\u97f3","on":"\u958b","off":"\u95dc","reply":"\u56de\u4e00\u5c01","hint":"\u6700\u591a100\u500b\u5b57\u3002\u900f\u904e\u96fb\u5b50\u90f5\u4ef6\u5bc4\u7d66 Kahakai\uff1b\u6bcf\u4e00\u5c01\u6211\u5011\u90fd\u6703\u5148\u8b80\u904e\uff0c\u518d\u88dd\u9032\u74f6\u5b50\u3002","send":"\u5bc4\u51fa","notes":["\u6211\u4f86\u9019\u88e1\u662f\u70ba\u4e86\u4e0d\u518d\u80e1\u601d\u4e82\u60f3\u3002\u5927\u6982\u6490\u4e86\u4e00\u500b\u5c0f\u6642\uff0c\u9019\u5df2\u7d93\u7834\u7d00\u9304\u4e86\u3002","\u5982\u679c\u4f60\u64bf\u5230\u9019\u5c01\u4fe1\uff0c\u4eca\u665a\u5403\u9ede\u597d\u7684\uff0c\u518d\u6253\u500b\u96fb\u8a71\u7d66\u4f60\u59ca\u59ca\u3002","\u7b2c41\u5929\u3002\u9084\u662f\u6c92\u6709\u8a08\u756b\u3002\u4e5f\u8a31\u554f\u984c\u5c31\u51fa\u5728\u8a08\u756b\u4e0a\u3002","\u723a\u723a\u5728\u9019\u7247\u6d77\u7058\u4e0a\u6559\u6211\u5439\u53e3\u54e8\u3002\u6211\u5230\u73fe\u5728\u9084\u662f\u5439\u4e0d\u597d\u3002","\u81f4\u8b80\u5230\u9019\u5c01\u4fe1\u7684\u4eba\uff1a\u7da0\u9583\u5149\u662f\u771f\u7684\u3002\u4e00\u5b9a\u8981\u770b\u5230\u6700\u5f8c\u4e00\u523b\u3002","\u6211\u5011\u7528\u9019\u500b\u6d77\u7063\u7684\u540d\u5b57\u66ff\u72d7\u53d6\u4e86\u540d\u3002\u5979\u8a0e\u53ad\u6c34\u3002","\u6211\u5728\u9019\u88e1\u5beb\u5b8c\u4e86\u4e00\u6574\u9996\u6b4c\uff0c\u7136\u5f8c\u6f6e\u6c34\u5e36\u8d70\u4e86\u6211\u7684\u7b46\u8a18\u672c\u3002\u90a3\u5927\u6982\u662f\u6211\u6700\u597d\u7684\u4e00\u9996\u3002","\u660e\u5929\u5c31\u8d70\u4e86\u3002\u8c9d\u6bbc\u7559\u5728\u6211\u627e\u5230\u5b83\u7684\u5730\u65b9\u3002","\u89aa\u611b\u7684\u672a\u4f86\u7684\u6211\uff1a\u4f60\u5728\u9019\u88e1\u5feb\u6a02\u904e\u3002\u8981\u662f\u5fd8\u4e86\uff0c\u5c31\u770b\u770b\u90a3\u5f35\u7167\u7247\u3002","\u6c92\u6709\u4ec0\u9ebc\u8a23\u7ac5\u3002\u7528\u5fc3\u770b\u5c31\u884c\u4e86\u3002","\u8001\u6c34\u624b\u5011\u8aaa\uff0c\u6572\u4e00\u6572\uff0c\u8239\u6703\u56de\u61c9\u4f60\u3002","\u51ac\u5929\u7684\u6642\u5019\uff0c\u591a\u770b\u770b\u6d77\u5e73\u7dda\u3002\u7260\u5011\u6bcf\u5e74\u90fd\u6703\u56de\u4f86\uff0c\u4f60\u80fd\u770b\u898b\u7260\u5011\u547c\u5438\u3002"]}};/*WORDS*/
+  // the visitor's language: the first of theirs that we speak, else English. #lang=ja forces one for tests.
+  const LANG = (() => {
+    const forced = (HASH.match(/lang=([\w-]+)/) || [])[1], list = forced ? [forced] : (navigator.languages || [navigator.language || 'en']);
+    for (const raw of list) { const l = String(raw); if (/^zh/i.test(l)) return /hans/i.test(l) ? 'zh-Hans' : /hant|tw|hk|mo/i.test(l) ? 'zh-Hant' : 'zh-Hans'; const two = l.slice(0, 2).toLowerCase(); if (WORDS[two]) return two; }
+    return 'en';
+  })();
+  const T9 = WORDS[LANG], NOTES = WORDS.en.notes;
+  // a bottle remembers which message it carries, not the words, so it reads in whatever language the visitor has
+  const noteText = n => typeof n === 'number' ? T9.notes[n] || NOTES[n] : NOTES.indexOf(n) >= 0 ? T9.notes[NOTES.indexOf(n)] : n;
+  const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  let shelf = []; try { shelf = JSON.parse(localStorage.getItem('kahakai-shelf') || '[]'); } catch (e) {}
+  if (!Array.isArray(shelf)) shelf = []; shelf = shelf.filter(f => f && typeof f === 'object' && !Array.isArray(f));
+  const keep = () => { try { localStorage.setItem('kahakai-shelf', JSON.stringify(shelf)); } catch (e) {} };
+  const seedOf = s => { let h = 2166136261; for (const ch of s) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h >>> 0; };
+  const rngOf = s => { let a = seedOf(s); return () => { a = a + 0x6D2B79F5 | 0; let v = Math.imul(a ^ a >>> 15, 1 | a); v = v + Math.imul(v ^ v >>> 7, 61 | v) ^ v; return ((v ^ v >>> 14) >>> 0) / 4294967296; }; };
+
+  // six kinds of find, all drawn here: cowrie, scallop, sea glass, sand dollar, sea star, bottle
+  // the finds and the basket are rendered objects (blender/finds.py): finds.webp is a 4 x 4 sheet in the order of KINDS, seen from above.
+  // Each picture is kept in three lights (the main hour, dusk, night) so a find sits in the same light as the sand it lies on.
+  const tinted = img => [[1, .84, .76], [.5, .5, .76], [.3, .36, .58]].map(([r, g, b]) => { const k = document.createElement('canvas'); k.width = img.width; k.height = img.height; const x = k.getContext('2d');
+    x.drawImage(img, 0, 0); x.globalCompositeOperation = 'multiply'; x.fillStyle = `rgb(${r * 255 | 0},${g * 255 | 0},${b * 255 | 0})`; x.fillRect(0, 0, k.width, k.height); x.globalCompositeOperation = 'destination-in'; x.drawImage(img, 0, 0); return k; });
+  const picture = src => { const o = { ok: false, raw: new Image(), t: [] }; o.raw.onload = () => { try { o.t = tinted(o.raw); o.ok = true; } catch (e) {} }; o.raw.src = src; return o; };
+  const SPR = picture('finds.webp'), BSK = picture('basket.webp');
+  let sprT = -1;   // the hour to light a picture for: 0 main light, 1 night; below 0, its own colours (the shelf)
+  function sprite(g, set, sx, sy, sw, sh, dx, dy, dw, dh) {
+    if (sprT < 0) { g.drawImage(set.raw, sx, sy, sw, sh, dx, dy, dw, dh); return; }
+    const a0 = g.globalAlpha, i = sprT < .5 ? 0 : 1, m = sprT < .5 ? sprT * 2 : sprT * 2 - 1;
+    g.drawImage(set.t[i], sx, sy, sw, sh, dx, dy, dw, dh);
+    if (m > .01) { g.globalAlpha = a0 * m; g.drawImage(set.t[i + 1], sx, sy, sw, sh, dx, dy, dw, dh); g.globalAlpha = a0; }
+  }
+  function drawItem(g, f, r) {
+    if (SPR.ok) { const k = kindOf(f), q = SPR.raw.width / 4; sprite(g, SPR, (k % 4) * q, (k >> 2) * q, q, q, -r * 1.42, -r * 1.42, r * 2.84, r * 2.84); return; }
+    const R = rngOf(f.id), h = f.hue;
+    g.lineJoin = g.lineCap = 'round';
+    if (f.type === 0) {
+      const gr = g.createLinearGradient(-r, -r, r, r); gr.addColorStop(0, '#fff3e2'); gr.addColorStop(.6, `hsl(${h},55%,76%)`); gr.addColorStop(1, `hsl(${h},35%,48%)`);
+      g.fillStyle = gr; g.beginPath(); g.ellipse(0, 0, r * 1.15, r * .74, 0, 0, 7); g.fill();
+      g.strokeStyle = 'rgba(90,50,60,.6)'; g.lineWidth = r * .07; g.beginPath(); g.moveTo(-r * .85, 0); g.quadraticCurveTo(0, r * .2, r * .85, 0); g.stroke();
+      for (let k = -4; k <= 4; k++) { g.beginPath(); g.moveTo(k * r * .17, r * .06); g.lineTo(k * r * .17, r * .2); g.stroke(); }
+    } else if (f.type === 1) {
+      g.fillStyle = `hsl(${h},62%,74%)`; g.beginPath(); g.moveTo(0, r * .85);
+      for (let k = 0; k <= 12; k++) { const a = Math.PI * (1.12 + .76 * k / 12), rr = r * (1 + .05 * (k % 2)); g.lineTo(Math.cos(a) * rr * 1.1, Math.sin(a) * rr * .95 + r * .2); }
+      g.closePath(); g.fill();
+      g.strokeStyle = `hsl(${h},45%,50%)`; g.lineWidth = r * .06;
+      for (let k = 0; k <= 12; k += 2) { const a = Math.PI * (1.12 + .76 * k / 12); g.beginPath(); g.moveTo(0, r * .8); g.lineTo(Math.cos(a) * r * 1.02, Math.sin(a) * r * .9 + r * .2); g.stroke(); }
+      g.fillStyle = `hsl(${h},45%,58%)`; g.fillRect(-r * .28, r * .72, r * .56, r * .2);
+    } else if (f.type === 2) {
+      const pts = []; for (let k = 0; k < 6; k++) { const a = k / 6 * 6.283 + R() * .5, rr = r * (.68 + R() * .34); pts.push([Math.cos(a) * rr * 1.15, Math.sin(a) * rr * .8]); }
+      g.beginPath(); pts.forEach((pt, k) => { const n = pts[(k + 1) % 6], mx = (pt[0] + n[0]) / 2, my = (pt[1] + n[1]) / 2; k ? g.quadraticCurveTo(pt[0], pt[1], mx, my) : g.moveTo(mx, my); });
+      const z = pts[0], n1 = pts[1]; g.quadraticCurveTo(z[0], z[1], (z[0] + n1[0]) / 2, (z[1] + n1[1]) / 2); g.closePath();
+      g.fillStyle = `hsla(${h},52%,60%,.82)`; g.fill(); g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = r * .07; g.beginPath(); g.arc(-r * .15, -r * .1, r * .5, 3.6, 4.9); g.stroke();
+    } else if (f.type === 3) {
+      g.fillStyle = '#efe2cc'; g.beginPath(); g.arc(0, 0, r, 0, 7); g.fill();
+      g.strokeStyle = 'rgba(120,90,70,.5)'; g.lineWidth = r * .06;
+      for (let k = 0; k < 5; k++) { g.save(); g.rotate(k * 1.2566 - 1.57); g.beginPath(); g.ellipse(r * .42, 0, r * .3, r * .11, 0, 0, 7); g.stroke(); g.restore(); }
+      g.fillStyle = 'rgba(120,90,70,.5)'; g.beginPath(); g.arc(0, 0, r * .07, 0, 7); g.fill();
+    } else if (f.type === 4) {
+      g.fillStyle = `hsl(${h},68%,58%)`; g.strokeStyle = g.fillStyle; g.lineWidth = r * .3; g.beginPath();
+      for (let k = 0; k < 10; k++) { const a = k * .6283 - 1.57, rr = k % 2 ? r * .42 : r * 1.05; k ? g.lineTo(Math.cos(a) * rr, Math.sin(a) * rr) : g.moveTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+      g.closePath(); g.fill(); g.stroke();
+      g.fillStyle = 'rgba(255,240,220,.6)'; for (let k = 0; k < 5; k++) for (let j = 1; j < 4; j++) { const a = k * 1.2566 - 1.57; g.beginPath(); g.arc(Math.cos(a) * r * .27 * j, Math.sin(a) * r * .27 * j, r * .05, 0, 7); g.fill(); }
+    } else if (f.type === 6) {
+      const gr = g.createRadialGradient(-r * .3, -r * .35, r * .1, 0, 0, r * 1.1); gr.addColorStop(0, '#8a6a44'); gr.addColorStop(1, '#3d2a18');
+      g.fillStyle = gr; g.beginPath(); g.ellipse(0, 0, r * 1.05, r * .92, 0, 0, 7); g.fill();
+      g.fillStyle = 'rgba(30,18,8,.7)'; for (let k = 0; k < 3; k++) { g.beginPath(); g.arc(r * .55 + Math.cos(k * 2.1) * r * .16, Math.sin(k * 2.1) * r * .16, r * .07, 0, 7); g.fill(); }
+    } else {
+      g.fillStyle = 'rgba(130,200,180,.5)'; g.strokeStyle = 'rgba(255,255,255,.6)'; g.lineWidth = r * .06;
+      g.beginPath(); g.roundRect(-r * 1.3, -r * .44, r * 1.75, r * .88, r * .3); g.fill(); g.stroke();
+      g.beginPath(); g.roundRect(r * .4, -r * .2, r * .62, r * .4, r * .08); g.fill(); g.stroke();
+      g.fillStyle = '#b98a5a'; g.fillRect(r * 1.0, -r * .16, r * .26, r * .32);
+      g.fillStyle = '#f1e6cd'; g.save(); g.rotate(-.08); g.fillRect(-r * .95, -r * .2, r * 1.05, r * .4); g.restore();
+      g.strokeStyle = 'rgba(255,255,255,.75)'; g.beginPath(); g.moveTo(-r * 1.0, -r * .28); g.lineTo(r * .1, -r * .28); g.stroke();
+    }
+  }
+  // every kind the sea can bring, in order from the lowest note to the highest. The shelf keeps one place for each.
+  const KINDS = [[3, 40], [5, 160], [1, 20], [1, 45], [1, 345, 1], [0, 18], [0, 28], [0, 340, 1], [4, 14], [4, 24], [4, 350, 1], [2, 150], [2, 35], [2, 190], [2, 205, 1], [6, 30]]
+    .map(([type, hue, rare], i) => ({ type, hue, rare: !!rare, semi: [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24, 26, 28, 31, 33, -5][i] }));
+  // when each kind can come. h: the hour, 0 the beach's main light, 1 night. Never explained; you learn it.
+  const WHEN = { 0: { beach: 'hanalei' }, 6: { h: [0, .35] }, 9: { beach: 'polihale' },
+    10: { beach: 'polihale', h: [.3, .85] }, 12: { h: [.4, 1] }, 13: { h: [.7, 1] }, 14: { h: [.7, 1], moon: .8 }, 15: { never: 1 } };
+  // how full the moon is tonight, from the real date (0 new, 1 full)
+  const MOONF = (HASH.match(/moon=([\d.]+)/) || [])[1];   // #moon=0.1 sets the moon for tests
+  const moonFull = () => { if (MOONF) return +MOONF; const ph = ((Date.now() / 864e5 - 10962.76) / 29.530588) % 1; return (1 - Math.cos(ph * 6.2832)) / 2; };
+  // the calendar rule, as loosened by Jamey on 2026-11-19: the real world may show (the moon, the season), but nothing is a daily reward and no find exists only today.
+  // So the cobalt glass still wants a bright moon and the whales still come in winter; the two pinks are simply rare; and each day leans toward one common kind.
+  const dayKinds = () => { const r = rngOf(cur + '@' + today()); const common = [2, 3, 5, 8, 11, 12][Math.floor(r() * 6)]; return { common, rare: [4, 7][Math.floor(r() * 2)] }; };
+  const canCome = k => { const w = WHEN[k]; if (!w) return true; const dk = dayKinds();
+    return !w.never && (!w.beach || w.beach === cur) && (!w.h || (dusk >= w.h[0] && dusk <= w.h[1])) && (!w.moon || moonFull() >= w.moon) && (!w.day || dk.rare === k); };
+  const kindOf = f => { const k = KINDS.findIndex(q => q.type === f.type && q.hue === f.hue); return k < 0 ? KINDS.findIndex(q => q.type === f.type) : k; };
+  const newFind = (id, forceType) => {
+    const R = rngOf(id), roll = R(), dk = dayKinds();
+    let pool = KINDS.map((q, i) => i).filter(i => forceType !== undefined ? KINDS[i].type === forceType : roll < .09 ? KINDS[i].type === 5 : KINDS[i].type < 5);
+    const open = pool.filter(canCome); if (open.length) pool = open;
+    const wt = i => (KINDS[i].rare ? .15 : 1) * (i === dk.common ? 4 : 1);
+    let w = R() * pool.reduce((a, i) => a + wt(i), 0), k = pool[0];
+    for (const i of pool) { w -= wt(i); if (w <= 0) { k = i; break; } }
+    const type = KINDS[k].type;
+    return { id, type, hue: KINDS[k].hue, kind: k, beach: cur, date: today(),
+      u: .08 + R() * .84, d: -.03, prev: 9, bury: .12 + R() * .3, glint: R() < .45, under: false, rot: R() * 6.28, spin: (R() - .5) * 2, state: 'out', peak: 0, restAt: 0, stay: 0, note: type === 5 ? Math.floor(R() * NOTES.length) : null };
+  };
+  // the drift: now and then a wave carries something up the sand and leaves it there. Left alone, a later
+  // wave takes it back. Half a minute to a minute and a half apart, never more than four at once, nothing counted.
+  // d is how far up the sand the thing sits, as a share of the sand's depth; below 0 it is still in the water.
+  const PACE = /fast/.test(HASH) ? .08 : 1;
+  let drift = [], nextDrift = 0, brought = 0, flying = null, basketBump = -9;
+  const sandH = () => H - shore;
+  // the end of a visit: about twenty minutes in, after the night has come, the tide goes out over four minutes
+  let ebb = 0;
+  const findPos = f => { const x = offX + f.u * D; return f.state === 'fall' ? [x, f.fy] : [x, ysAt(x) + sandH() * f.d]; };
+  const basketAt = () => [W * .86, Math.min(H - 22, shore + (H - shore) * .8), Math.max(14, u * .032)];
+  function bring(forceType) {
+    if (drift.length >= 4) { const o = drift.find(f => f.state === 'rest'); if (o) o.state = 'going'; }
+    const f = newFind(cur + ':' + Date.now() + ':' + Math.random(), forceType);
+    // keep them apart along the beach so two never land on top of each other
+    const view = () => ((W * (.2 + Math.random() * .6)) - offX) / D;
+    if (!brought) f.u = view();
+    for (let k = 0; k < 12 && drift.some(o => Math.abs(o.u - f.u) < .08); k++) f.u = brought ? .08 + Math.random() * .84 : view();
+    drift.push(f);
+  }
+  function updateFind(now, dt) {
+    if (!W) return;
+    // the first comes soon and a second not long after, then every half minute to a minute or so
+    if (!nextDrift) { nextDrift = now + (4 + Math.random() * 5) * PACE; brought = 0; }
+    if (now > nextDrift) { if (drift.length < 4 && ebb < .05) bring(); nextDrift = now + (++brought < 2 ? 15 + Math.random() * 15 : 25 + Math.random() * 45) * PACE; }
+    for (const f of drift) {
+      const x = offX + f.u * D, ew = (edge[col(x)] - ysAt(x)) / sandH(), reach = ew - .012;
+      if (f.state === 'fall') {
+        // a coconut out of the palm: it drops, lands with a thump, bounces once and lies where it fell
+        const gy = ysAt(x) + sandH() * f.d; f.vy += H * 2.6 * dt; f.fy += f.vy * dt; f.rot += f.spin * dt * 3;
+        if (f.fy >= gy) { if (f.vy > H * .25) { thud(x); f.fy = gy; f.vy *= -.28; } else { f.state = 'rest'; f.restAt = now; f.stay = (90 + Math.random() * 120) * PACE; } }
+      } else if (f.state === 'out') {
+        // waits in the shallows for a wave with some push, then rides its front up the sand
+        if (ew > .12 && ew > f.prev) f.state = 'ride';
+        f.prev = ew;
+      } else if (f.state === 'ride') {
+        if (reach > f.d) f.d += (reach - f.d) * Math.min(1, dt * 6);
+        f.peak = Math.max(f.peak, f.d); f.rot += f.spin * dt;
+        if (reach < f.peak - .02) { f.state = 'rest'; f.restAt = now; f.stay = (60 + Math.random() * 110) * PACE; }
+      } else if (f.state === 'rest') {
+        const und = edge[col(x)] > ysAt(x) + sandH() * f.d + 2;
+        if (und && !f.under) f.bury = Math.min(.62, f.bury + .07 + Math.random() * .06);
+        f.under = und;
+        // after a while the water starts reaching for it; the next wave that gets there takes it
+        const ready = now - f.restAt > f.stay, near = ready ? Math.min(.07, (now - f.restAt - f.stay) / (90 * PACE) * .07) : -1;
+        if (ready && reach > f.d - near) f.state = 'going';
+      } else if (f.state === 'going') {
+        // drawn back down with the backwash, tumbling, into the water
+        const pull = Math.min(f.d, reach - .05); if (pull < f.d) f.d += (pull - f.d) * Math.min(1, dt * 3);
+        f.rot -= f.spin * dt * .6;
+        if (f.d < -.04) f.state = 'gone';
+      }
+    }
+    drift = drift.filter(f => f.state !== 'gone');
+  }
+  function drawFinds(now) {
+    const [bx, by, br] = basketAt(), bump = clamp(1 - (now - basketBump) / .4, 0, 1);
+    sprT = dusk;
+    if (BSK.ok) { c.fillStyle = sil(.3); c.beginPath(); c.ellipse(bx + br * .15, by + br * .92, br * 1.5, br * .3, 0, 0, 7); c.fill(); sprite(c, BSK, 0, 0, BSK.raw.width, BSK.raw.height, bx - br * 1.6, by - br * 1.92 - bump * 5, br * 3.2, br * 3.2); }
+    else {
+    c.save(); c.translate(bx, by - bump * 5);
+    c.fillStyle = sil(.35); c.beginPath(); c.ellipse(0, br * .95, br * 1.3, br * .3, 0, 0, 7); c.fill();
+    c.strokeStyle = '#3d2a18'; c.lineWidth = br * .16; c.beginPath(); c.arc(0, -br * .25, br * .95, Math.PI * 1.08, Math.PI * 1.92); c.stroke();
+    const bg2 = c.createLinearGradient(0, -br * .3, 0, br); bg2.addColorStop(0, '#a47a4c'); bg2.addColorStop(1, '#5e4126'); c.fillStyle = bg2;
+    c.beginPath(); c.moveTo(-br * 1.05, -br * .25); c.lineTo(br * 1.05, -br * .25); c.lineTo(br * .8, br * .9); c.lineTo(-br * .8, br * .9); c.closePath(); c.fill();
+    c.strokeStyle = 'rgba(40,24,10,.45)'; c.lineWidth = 1.2; for (let k = 0; k < 3; k++) { c.beginPath(); c.moveTo(-br * (1 - k * .07), -br * .05 + k * br * .3); c.lineTo(br * (1 - k * .07), -br * .05 + k * br * .3); c.stroke(); }
+    c.fillStyle = '#c59a66'; c.beginPath(); c.ellipse(0, -br * .25, br * 1.08, br * .2, 0, 0, 7); c.fill();
+    c.restore();
+    }
+    for (const f of drift) {
+      if (f.state === 'out') continue;
+      // it comes out of the water and goes back into it: faint while the sea is over it, solid on dry sand
+      const [x, y] = findPos(f), r = Math.max(14, u * .034) * scaleAt(Math.max(y, shore)) * (f.type === 6 ? 1.25 : 1), under = f.state !== 'fall' && edge[col(x)] > y + 2;
+      const a = f.state === 'fall' ? 1 : clamp((f.d + .02) / .05, 0, 1) * (under ? .55 : 1);
+      if (a <= .01) continue;
+      // half buried once it has settled: only the top shows above the sand; under the wash it rocks a little
+      const settled = f.state === 'rest' || f.state === 'going', cut = r * .72 * (1 - 2 * (settled ? f.bury : 0));
+      const rock = settled && under ? Math.sin(now * 2.1 + f.u * 20) : 0;
+      c.save(); c.globalAlpha = a; c.translate(x + rock * r * .25, y);
+      if (!under) { c.fillStyle = sil(.22); c.beginPath(); c.ellipse(r * .15, cut, r * 1.05, r * .2, 0, 0, 7); c.fill(); }
+      if (settled) { c.beginPath(); c.rect(-r * 3, -r * 3, r * 6, r * 3 + cut); c.clip(); }
+      c.scale(1, .72); c.rotate(f.rot + rock * .12); drawItem(c, f, r); c.restore();
+      const tw = f.glint && f.state === 'rest' && !under ? Math.pow(Math.max(0, Math.sin(now * .9 + f.u * 9)), 18) : 0;
+      if (tw > .02) { c.strokeStyle = `rgba(255,248,230,${tw})`; c.lineWidth = 1.4; c.beginPath(); c.moveTo(x - r * tw, y - r * .7); c.lineTo(x + r * tw, y - r * .7); c.moveTo(x, y - r * .7 - r * tw); c.lineTo(x, y - r * .7 + r * tw); c.stroke(); }
+    }
+    if (flying) {
+      const k = clamp((now - flying.t0) / .7, 0, 1), e = k * k * (3 - 2 * k), x = flying.x + (bx - flying.x) * e, y = flying.y + (by - flying.y) * e - Math.sin(k * Math.PI) * H * .08;
+      c.save(); c.translate(x, y); c.rotate(flying.f.rot + k * 3); drawItem(c, flying.f, Math.max(14, u * .034) * (1 - .45 * e)); c.restore();
+      if (k >= 1) { basketBump = now; const f = flying.f; flying = null; playKind(kindOf(f)); if (f.note != null) showNote(f.note, true); }
+    }
+  }
+  const shelfEl = document.getElementById('shelf'), board = document.getElementById('board'), noteEl = document.getElementById('note');
+  function showNote(n, fresh) {
+    const el = document.getElementById('notetext'); el.textContent = noteText(n); el.lang = LANG; noteEl.hidden = false;
+    // the paper unrolls; a bottle opened for the first time gives up its cork
+    if (!calm) el.animate([{ transform: 'rotate(-1.5deg) scaleY(.04)', opacity: .2 }, { transform: 'rotate(-1.5deg) scaleY(1.04)', opacity: 1, offset: .7 }, { transform: 'rotate(-1.5deg) scaleY(1)', opacity: 1 }], { duration: 620, easing: 'cubic-bezier(.2,.8,.3,1)' });
+    if (fresh) cork();
+  }
+  // a bottle can be answered: the message goes to Kahakai by the visitor's own email, and a person reads it before it is put in a bottle for someone else
+  const replyB = document.getElementById('reply'), writeF = document.getElementById('write'), msgT = document.getElementById('msg');
+  replyB.textContent = T9.reply; document.getElementById('hint').textContent = T9.hint; document.getElementById('send').textContent = T9.send;
+  const closeNote = () => { noteEl.hidden = true; writeF.hidden = true; replyB.hidden = false; };
+  noteEl.addEventListener('click', e => { if (e.target === noteEl || e.target.id === 'notetext' || e.target.classList.contains('sheet')) closeNote(); });
+  replyB.addEventListener('click', () => { writeF.hidden = false; replyB.hidden = true; msgT.focus(); });
+  writeF.addEventListener('submit', e => { e.preventDefault(); const txt = msgT.value.trim().slice(0, 100); if (!txt) return;
+    const a = document.createElement('a'); a.href = 'mailto:aloha@kahak.ai?subject=' + encodeURIComponent('A bottle from ' + B.name) + '&body=' + encodeURIComponent(txt + '\n\n(' + LANG + ')'); a.target = '_top'; document.body.appendChild(a); a.click(); a.remove();
+    msgT.value = ''; closeNote(); });
+  // the touch that opens the shelf is followed by a click on the shelf's backdrop; that click must not close it. shelfHold lasts until that finger is up
+  let shelfHold = false; addEventListener('pointerup', () => setTimeout(() => { shelfHold = false; }, 80));
+  shelfEl.addEventListener('click', e => { if (e.target === shelfEl && !shelfHold) shelfEl.hidden = true; });
+  // a struck note for each kind: shells knock like wood, stars pluck, sea glass rings, the bottle is blown
+  function playKind(k, when = 0) {
+    if (!audio || audio.ctx.state !== 'running' || k < 0) return;
+    const { ctx, master } = audio, q = KINDS[k], at = ctx.currentTime + .01 + when, f0 = 196 * Math.pow(2, q.semi / 12);
+    const out = ctx.createGain(); out.connect(master);
+    const tone = (ratio, amp, decay, type = 'sine', attack = .004) => {
+      const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type; o.frequency.value = f0 * ratio;
+      g.gain.setValueAtTime(.0001, at); g.gain.exponentialRampToValueAtTime(amp, at + attack); g.gain.exponentialRampToValueAtTime(.0001, at + decay);
+      o.connect(g); g.connect(out); o.start(at); o.stop(at + decay + .05);
+    };
+    if (q.type === 2) { tone(1, .16, 2.6); tone(2.76, .06, 1.4); tone(5.4, .03, .7); }
+    else if (q.type === 4) { tone(1, .18, .9, 'triangle'); tone(2, .05, .4); }
+    else if (q.type === 3) { tone(1, .26, .55); tone(3.9, .04, .12); }
+    else if (q.type === 6) { tone(1, .3, .32); tone(2.3, .12, .12); tone(.5, .12, .4); }
+    else if (q.type === 5) {
+      tone(1, .12, 1.1, 'sine', .09);
+      const n = ctx.createBufferSource(), bp = ctx.createBiquadFilter(), g = ctx.createGain(); n.buffer = audio.buf; bp.type = 'bandpass'; bp.frequency.value = f0; bp.Q.value = 18;
+      g.gain.setValueAtTime(.0001, at); g.gain.exponentialRampToValueAtTime(.5, at + .1); g.gain.exponentialRampToValueAtTime(.0001, at + .9);
+      n.connect(bp); bp.connect(g); g.connect(out); n.start(at, Math.random() * 3); n.stop(at + 1);
+    } else { tone(1, .22, 1.1); tone(4, .05, .18); }
+    setTimeout(() => { try { out.disconnect(); } catch (e) {} }, (when + 3) * 1000);
+  }
+  function openShelf() {
+    board.textContent = ''; sprT = -1; shelfHold = true;
+    // one place per kind: what you have found, and a faint outline of what you have not
+    KINDS.forEach((q, k) => {
+      const have = shelf.filter(f => kindOf(f) === k), f = have[have.length - 1] || { id: 'kind' + k, type: q.type, hue: q.hue };
+      const fig = document.createElement('figure'), cvs = document.createElement('canvas');
+      cvs.width = 168; cvs.height = 144; const g = cvs.getContext('2d'); g.translate(84, 76); g.rotate(-.2); drawItem(g, f, 44);
+      if (!have.length) { g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-in'; g.fillStyle = 'rgba(255,244,230,.09)'; g.fillRect(0, 0, 168, 144); }
+      if (have.length) fig.dataset.k = k;
+      fig.append(cvs); board.appendChild(fig);
+    });
+    // the bottles themselves, each with its note
+    shelf.filter(f => f.note != null).reverse().forEach(f => {
+      const fig = document.createElement('figure'), cvs = document.createElement('canvas');
+      cvs.width = 168; cvs.height = 144; const g = cvs.getContext('2d'); g.translate(84, 76); g.rotate(-.2); drawItem(g, f, 44);
+      fig.style.cursor = 'pointer'; fig.addEventListener('click', () => showNote(f.note)); fig.append(cvs); board.appendChild(fig);
+    });
+    shelfEl.hidden = false;
+  }
+  // play the shelf: tap a find for its note, or run a finger along the shelf
+  let strum = null;
+  const slotAt = e => { const el = document.elementFromPoint(e.clientX, e.clientY); const fig = el && el.closest && el.closest('#board figure[data-k]'); return fig; };
+  const sound = fig => { if (!fig) return; playKind(+fig.dataset.k); fig.animate([{ transform: 'translateY(-4px)' }, { transform: 'none' }], { duration: 260, easing: 'ease-out' }); };
+  board.addEventListener('pointerdown', e => { startAudio(); const fig = slotAt(e); if (!fig) return; strum = fig; sound(fig); });
+  board.addEventListener('pointermove', e => { if (!strum) return; const fig = slotAt(e); if (fig && fig !== strum) { strum = fig; sound(fig); } });
+  addEventListener('pointerup', () => { strum = null; }); addEventListener('pointercancel', () => { strum = null; });
+  // returns true when the tap was used here
+  function comb(x, y) {
+    const [bx, by, br] = basketAt();
+    if (Math.hypot(x - bx, y - by) < Math.max(40, br * 2)) { basketBump = performance.now() / 1000; openShelf(); return true; }
+    for (const f of drift) {
+      if ((f.state !== 'rest' && f.state !== 'going') || flying || f.d < .01) continue;
+      const [fx, fy] = findPos(f);
+      if (Math.hypot(x - fx, y - fy) < 44) { drift = drift.filter(o => o !== f); flying = { f, x: fx, y: fy, t0: performance.now() / 1000 }; shelf.push({ id: f.id, type: f.type, hue: f.hue, kind: f.kind, beach: f.beach, date: f.date, rot: f.rot, note: f.note }); keep(); return true; }
+    }
+    return false;
+  }
+  document.getElementById('bring').addEventListener('click', () => bring());
+  document.getElementById('bottle').addEventListener('click', () => bring(5));
+
+  // ---------- prototype controls ----------
+  const gear = document.getElementById('gear'), panel = document.getElementById('panel'), snd = document.getElementById('snd');
+  gear.hidden = !PROTO;
+  // #show: the beach as a living picture with nothing on it to press (the landing page shows it this way, as an example of the game)
+  if (/show/.test(HASH)) { document.getElementById('menu').hidden = true; ears.style.display = 'none'; }
+  // the landing page holds this beach in a frame: 'kahakai-play' hands it to the visitor, 'kahakai-show' takes it back to a picture
+  addEventListener('message', e => { if (e.origin !== location.origin) return; const m = document.getElementById('menu');
+    if (e.data === 'kahakai-play') { m.hidden = false; if (!audio) ears.style.display = ''; else audio.ctx.resume().catch(() => {}); }
+    else if (e.data === 'kahakai-show') { m.hidden = true; ears.style.display = 'none'; document.getElementById('cardwrap').hidden = true; shelfEl.hidden = true; closeNote(); if (audio) audio.ctx.suspend().catch(() => {}); } });
+  const mark = () => {
+    const live = !!audio && audio.ctx.state === 'running' && soundOn;
+    snd.textContent = live ? 'On' : 'Off'; snd.setAttribute('aria-pressed', String(live));
+    panel.querySelectorAll('[data-t]').forEach(b => b.setAttribute('aria-pressed', String(Math.abs(+b.dataset.t - dusk) < .2)));
+  };
+  gear.addEventListener('click', () => { panel.hidden = !panel.hidden; gear.setAttribute('aria-expanded', String(!panel.hidden)); mark(); });
+  panel.querySelectorAll('[data-t]').forEach(b => b.addEventListener('click', () => { duskStep = +b.dataset.t; }));
+  const pick = document.getElementById('beach');
+  KEYS.forEach(k => { const o = document.createElement('option'); o.value = k; o.textContent = BEACHES[k].name; pick.appendChild(o); });
+  function setBeach(k) {
+    if (k === cur || !BEACHES[k]) return;
+    glc.classList.add('out');
+    setTimeout(() => {
+      cur = k; B = BEACHES[k]; SFR = B.sfr; pick.value = k; document.getElementById('t-sunset').textContent = B.main;
+      duskStep = PROTO ? 0 : null; dusk = 0; visit = 0; W = 0; prints = []; waves = []; trails = []; drift = []; nextDrift = 0; crab = null; crabNext = 0; rcrabs = []; rcNext = 0; spouts = []; rips = []; star = null; whaleNext = 0; prevDusk = 0;
+      loadBeach(); dispatchEvent(new Event('kahakai-beach'));
+    }, 700);
+  }
+  pick.value = cur; document.getElementById('t-sunset').textContent = B.main;
+  pick.addEventListener('change', () => setBeach(pick.value));
+  snd.addEventListener('click', () => { if (audio && audio.ctx.state === 'running') toggleSound(); setTimeout(mark, 300); });
+  setInterval(() => { if (!panel.hidden) mark(); }, 400);
+
+  // ---------- small surprises. None is explained; each is a real thing about a beach like this one ----------
+  const PT = (px, py) => [offX + px * D, offY + py * D], rnd = Math.random;
+  // short made sounds: struck partials, and a breath of filtered noise
+  function ring(parts, amp, decay, panX = 0, delay = 0, drop = 1) {
+    if (!audio || audio.ctx.state !== 'running' || !soundOn) return;
+    const { ctx, master } = audio, t = ctx.currentTime + .01 + delay, pn = ctx.createStereoPanner ? ctx.createStereoPanner() : ctx.createGain();
+    if (pn.pan) pn.pan.value = clamp(panX, -1, 1); pn.connect(master);
+    for (const [f, a, d] of parts) {
+      const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(f, t); if (drop !== 1) o.frequency.exponentialRampToValueAtTime(f * drop, t + decay * d);
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(amp * a, t + .003); g.gain.exponentialRampToValueAtTime(.0001, t + decay * d);
+      o.connect(g); g.connect(pn); o.start(t); o.stop(t + decay * d + .05);
+    }
+    setTimeout(() => { try { pn.disconnect(); } catch (e) {} }, (delay + decay + 1) * 1000);
+  }
+  function hiss(freq, q, amp, dur, panX = 0, delay = 0) {
+    if (!audio || audio.ctx.state !== 'running' || !soundOn) return;
+    const { ctx, master, buf } = audio, t = ctx.currentTime + .01 + delay, n = ctx.createBufferSource(), bp = ctx.createBiquadFilter(), g = ctx.createGain(), pn = ctx.createStereoPanner ? ctx.createStereoPanner() : ctx.createGain();
+    n.buffer = buf; bp.type = 'bandpass'; bp.frequency.value = freq; bp.Q.value = q; if (pn.pan) pn.pan.value = clamp(panX, -1, 1);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(amp, t + Math.min(.03, dur * .3)); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    n.connect(bp); bp.connect(g); g.connect(pn); pn.connect(master); n.start(t, rnd() * 3); n.stop(t + dur + .05);
+    setTimeout(() => { try { pn.disconnect(); } catch (e) {} }, (delay + dur + 1) * 1000);
+  }
+  const panOf = x => (x / W - .5) * 1.4;
+  const thud = x => { ring([[82, 1, 1], [124, .5, .6]], .5, .3, panOf(x), 0, .7); hiss(320, 1, .25, .12, panOf(x)); };
+  const cork = () => { ring([[520, 1, 1]], .3, .11, 0, .05, .45); hiss(1700, 2, .2, .06, 0, .05); };
+
+  // the boats: knock on one and its rigging answers against the mast, and the water rings where it sits
+  const BOATS = [[.365, .457, .305], [.482, .447, .40], [.618, .452, .35], [.675, .447, .385], [.29, .446, .395]];
+  let rips = [];
+  // the palm: the sky mask knows where it is. Shake it and it rustles; now and then it lets a coconut go
+  const maskPx = (() => { const im = new Image(); let px = null; im.onload = () => { try { const k = document.createElement('canvas'); k.width = k.height = 256; const g = k.getContext('2d'); g.drawImage(im, 0, 0, 256, 256); px = g.getImageData(0, 0, 256, 256).data; } catch (e) {} }; const get = () => { px = null; im.src = cur + '-mask.jpg'; }; get(); addEventListener('kahakai-beach', get);
+    return (x, y) => px ? px[((clamp(y, 0, .999) * 256 | 0) * 256 + (clamp(x, 0, .999) * 256 | 0)) * 4] : (x > .75 ? 0 : 255); })();
+  let lastNut = -99, flecks = [];
+  function boatAt(x, y) {
+    if (cur !== 'hanalei') return -1;
+    const px = (x - offX) / D, py = (y - offY) / D;
+    for (let i = 0; i < BOATS.length; i++) { const [bx, by, mt] = BOATS[i]; if (Math.abs(px - bx) < Math.max(.016, 26 / D) && py > mt - .012 && py < by + .022) return i; }
+    return -1;
+  }
+  function knock(i, x) {
+    const f = 2250 * (1 + i * .09), pn = panOf(x);
+    ring([[f, 1, 1], [f * 1.65, .5, .6], [f * 2.31, .25, .4]], .06, .9, pn); ring([[f, 1, 1], [f * 1.65, .5, .6]], .035, .7, pn, .19 + rnd() * .08);
+    if (rnd() < .5) ring([[f, 1, 1]], .02, .5, pn, .5 + rnd() * .2);
+    rips.push({ px: BOATS[i][0], py: BOATS[i][1] + .008, t0: performance.now() / 1000 });
+  }
+  function tapWorld(x, y) {
+    const now = performance.now() / 1000;
+    if (crab && crab.phase !== 'in' && crab.phase !== 'home') { const [cx, cy] = crabPos(); if (Math.hypot(x - cx, y - cy) < 40) { crab.phase = 'home'; crab.fast = 3; hiss(5200, 3, .08, .05, panOf(cx)); return true; } }
+    const px = (x - offX) / D, py = (y - offY) / D;
+    if (B.rocks && px > B.rocks[0] && px < B.rocks[2] && py > B.rocks[1] && py < B.rocks[3]) { let any = false; for (const k of rcrabs) if (!k.flee) { k.flee = 1; k.dir = k.px > px ? 1 : -1; any = true; } if (any) hiss(4800, 3, .07, .07, panOf(x)); rcNext = now + (14 + rnd() * 20) * PACE; return any; }
+    const near = (() => { if (px < .48 || py > HFR - .008) return false; const r = Math.max(.012, 24 / D); for (let a = -2; a <= 2; a++) for (let b = -2; b <= 2; b++) if (maskPx(px + a * r / 2, Math.min(HFR - .012, py + b * r / 2)) < 120) return true; return false; })();
+    if (near) {
+      for (let k = 0; k < 5; k++) flecks.push({ px: px + (rnd() - .5) * .03, py: py + (rnd() - .5) * .02, t0: now + rnd() * .15, vx: (rnd() - .5) * .03, sp: (rnd() - .5) * 9, r: .6 + rnd() * .7 });   // a shaken frond lets go of a few dry bits, so the palm answers with the sound off too
+      hiss(3400, .7, .1, .55, panOf(x)); hiss(2100, .9, .06, .8, panOf(x), .12);
+      if (now - lastNut > 25 * PACE && !drift.some(f => f.type === 6) && rnd() < .7) {
+        lastNut = now; const f = newFind(cur + ':nut:' + Date.now(), 6);
+        f.u = clamp(px + (rnd() - .5) * .03, .05, .95); f.d = .18 + rnd() * .3; f.state = 'fall'; f.fy = y + 8; f.vy = 0; f.bury = .05; f.glint = false;
+        drift.push(f);
+      }
+      return true;
+    }
+    return false;
+  }
+
+  // the Milky Way, made once: a slanted band of faint stars and glow rising from the left of the horizon
+  let milkyC = null;
+  const milkyPic = () => { if (milkyC) return milkyC; milkyC = document.createElement('canvas'); milkyC.width = 1024; milkyC.height = Math.round(1024 * HFR); const g = milkyC.getContext('2d'), R = rngOf('milky'), hh = milkyC.height;
+    const at = t => [1024 * (.05 + .5 * t + .08 * t * t), hh * (1 - 1.05 * t)], gauss = () => (R() + R() + R() - 1.5) * .9;
+    for (let i = 0; i < 26; i++) { const t = i / 25, [x, y] = at(t), r = 60 + 50 * Math.sin(t * 3.1); const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(190,205,255,${.05 + .03 * Math.sin(t * 9)})`); gr.addColorStop(1, 'rgba(190,205,255,0)'); g.fillStyle = gr; g.fillRect(x - r, y - r, 2 * r, 2 * r); }
+    for (let i = 0; i < 1500; i++) { const t = R(), [x, y] = at(t), w = 55 + 30 * Math.sin(t * 3.1), px = x + gauss() * w, py = y + gauss() * w * .6, b = R(); if (py > hh - 6) continue; g.fillStyle = `rgba(${225 + 30 * R() | 0},${228 + 20 * R() | 0},255,${.12 + .5 * b * b * b})`; g.fillRect(px, py, b > .93 ? 1.6 : 1, b > .93 ? 1.6 : 1); }
+    g.globalCompositeOperation = 'destination-out'; for (let i = 0; i < 9; i++) { const t = .15 + R() * .7, [x, y] = at(t), r = 14 + R() * 26; const gr = g.createRadialGradient(x + gauss() * 14, y + gauss() * 10, 0, x, y, r); gr.addColorStop(0, 'rgba(0,0,0,.55)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(x - r, y - r, 2 * r, 2 * r); }
+    return milkyC; };
+  // the rock crabs of a lava shore: black on black rock, so you only see one when it moves. Touch the rocks and they all go round the back
+  let rcrabs = [], rcNext = 0;
+  function rockCrabs(now, dt) {
+    if (!B.perch) { rcrabs = []; return; }
+    if (!rcNext) rcNext = now + (6 + rnd() * 14) * PACE;
+    if (now > rcNext && rcrabs.length < 3) { const pq = B.perch[rnd() * B.perch.length | 0]; if (!rcrabs.some(k => k.home === pq)) rcrabs.push({ home: pq, px: pq[0], py: pq[1], dir: rnd() < .5 ? -1 : 1, t0: now, move: now + .3, rest: now + 1.2 + rnd(), leave: now + (25 + rnd() * 50) * PACE, leg: 0, a: 0, flee: 0 }); rcNext = now + (10 + rnd() * 30) * PACE; }
+    for (const k of rcrabs) {
+      if (k.flee) { k.px += k.dir * .06 * dt; k.py -= .012 * dt; k.leg += dt * 50; k.a -= dt * 3.5; continue; }
+      k.a = Math.min(1, k.a + dt * 2);
+      if (now > k.move && now < k.rest) { k.px += k.dir * .012 * dt; k.leg += dt * 30; }
+      else if (now >= k.rest) { k.move = now + 2 + rnd() * 7; k.rest = k.move + .5 + rnd() * 1.2; if (Math.abs(k.px - k.home[0]) > .02) k.dir = k.px > k.home[0] ? -1 : 1; else if (rnd() < .4) k.dir = -k.dir; }
+      if (now > k.leave) k.flee = 1;
+    }
+    rcrabs = rcrabs.filter(k => k.a > -.2);
+  }
+  function drawRockCrabs() {
+    for (const k of rcrabs) { if (k.a <= 0) continue; const [x, y] = PT(k.px, k.py), r = Math.max(3.5, D * .0042), lit = 1 - dusk * .7;
+      c.save(); c.globalAlpha = Math.min(1, k.a); c.translate(x, y); c.scale(1, .75);
+      c.strokeStyle = `rgb(${38 * lit + 8 | 0},${26 * lit + 8 | 0},${24 * lit + 12 | 0})`; c.lineWidth = Math.max(1, r * .22); c.lineCap = 'round';
+      for (const sd of [-1, 1]) for (let j = 0; j < 4; j++) { const ph = Math.sin(k.leg + j * 1.7 + (sd > 0 ? 1.1 : 0)) * .35, a0 = -.5 + j * .36 + ph * .5; c.beginPath(); c.moveTo(sd * r * .7, a0 * r * .5); c.lineTo(sd * r * 1.5, a0 * r * 1.1 + r * .1); c.lineTo(sd * r * 1.85, a0 * r * 1.3 + r * .5); c.stroke(); }
+      c.fillStyle = `rgb(${30 * lit + 6 | 0},${22 * lit + 7 | 0},${22 * lit + 11 | 0})`; c.beginPath(); c.ellipse(0, 0, r, r * .7, 0, 0, 7); c.fill();
+      c.fillStyle = `rgba(${150 * lit + 30 | 0},${70 * lit + 25 | 0},${50 * lit + 30 | 0},.55)`; c.beginPath(); c.ellipse(-r * .2, -r * .25, r * .5, r * .18, -.3, 0, 7); c.fill();   // the wet shine on its back
+      c.restore(); }
+  }
+  // the green flash, a shooting star, a whale's breath in winter, a ghost crab on the sand
+  let flashAt = -99, prevDusk = 0, star = null, starNext = 0, spouts = [], whaleNext = 0, crab = null, crabNext = 0;
+  const WINTER = [10, 11, 0, 1, 2, 3].includes(new Date().getMonth());   // humpbacks are in Hawaiian waters from about November to April
+  const crabPos = () => { const x = offX + crab.u * D; return [x, ysAt(x) + sandH() * crab.d]; };
+  function updateWorld(now, dt) {
+    if (!W) return;
+    // the last of the sun: as its upper edge goes, a second or two of green
+    if (B.sun && prevDusk < .43 && dusk >= .43 && dusk - prevDusk < .2) flashAt = now;
+    prevDusk = dusk;
+    if (dusk > .8) {
+      if (!starNext) starNext = now + (15 + rnd() * 45) * PACE;
+      if (now > starNext) { const dx = (rnd() < .5 ? -1 : 1) * (.6 + rnd() * .4); star = { x: W * (.08 + rnd() * .42), y: hy * (.08 + rnd() * .34), dx, dy: .35 + rnd() * .3, len: u * (.14 + rnd() * .12), t0: now }; starNext = now + (35 + rnd() * 90) * PACE; }
+    } else starNext = 0;
+    if (star && now - star.t0 > .9) star = null;
+    if (WINTER && B.sea && dusk < .7) {
+      if (!whaleNext) whaleNext = now + (30 + rnd() * 70) * PACE;
+      if (now > whaleNext) { const span = B.sea[rnd() * B.sea.length | 0], px = span[0] + rnd() * (span[1] - span[0]), n = 2 + (rnd() * 2 | 0); for (let i = 0; i < n; i++) spouts.push({ px: px + i * .004, t0: now + i * (5 + rnd() * 3) }); whaleNext = now + (110 + rnd() * 160) * PACE; }
+    }
+    rockCrabs(now, dt);
+    spouts = spouts.filter(sp => now - sp.t0 < 3.4);
+    rips = rips.filter(r => now - r.t0 < 2.6); flecks = flecks.filter(f => now - f.t0 < 1.3);
+    // the crab: out of its hole, sideways in short runs, and home again. Tap it and it is gone
+    if (!crab) {
+      if (!crabNext) crabNext = now + (16 + rnd() * 40) * PACE;
+      if (now > crabNext && ebb < .9) { const uu = (W * (.14 + rnd() * .72) - offX) / D, d = .36 + rnd() * .4; crab = { hu: uu, hd: d, u: uu, d, dir: rnd() < .5 ? -1 : 1, phase: 'out', until: now + .7, left: 3 + (rnd() * 4 | 0), fast: 1, leg: 0, born: now }; }
+    } else {
+      const cb = crab, sp = u * .2 / D * cb.fast, [cx, cy] = crabPos();
+      if (edge[col(cx)] > cy - 8 && cb.phase !== 'in') { cb.d = Math.min(.92, cb.d + dt * .6); cb.leg += dt * 30; }   // it will not be caught by the wash
+      if (cb.phase === 'out' && now > cb.until) { cb.phase = 'run'; cb.until = now + .35 + rnd() * .7; }
+      else if (cb.phase === 'run') { cb.u = clamp(cb.u + cb.dir * sp * dt, .03, .97); cb.leg += dt * 34; if (now > cb.until) { cb.phase = --cb.left > 0 ? 'wait' : 'home'; cb.until = now + .5 + rnd() * 1.6; if (rnd() < .35) cb.dir = -cb.dir; } }
+      else if (cb.phase === 'wait' && now > cb.until) { cb.phase = 'run'; cb.until = now + .35 + rnd() * .7; }
+      else if (cb.phase === 'home') {
+        const du = cb.hu - cb.u, dd = cb.hd - cb.d, dist = Math.hypot(du * D, dd * sandH()), go = Math.max(sp, u * .5 / D) * D * dt * (cb.fast > 1 ? 1.6 : 1); cb.leg += dt * 44;
+        if (dist <= go) { cb.u = cb.hu; cb.d = cb.hd; cb.phase = 'in'; cb.until = now + .35; } else { cb.u += du * go / dist; cb.d += dd * go / dist; }
+      }
+      else if (cb.phase === 'in' && now > cb.until) { crab = null; crabNext = now + (35 + rnd() * 90) * PACE; }
+    }
+  }
+  function drawWorld(now) {
+    // rings on the water under a boat that was knocked
+    for (const r of rips) { const k = (now - r.t0) / 2.6, [x, y] = PT(r.px, r.py); c.lineWidth = 1.2; for (let j = 0; j < 2; j++) { const kk = k - j * .22; if (kk <= 0) continue; c.strokeStyle = `rgba(255,244,230,${.5 * (1 - kk) * (1 - kk)})`; c.beginPath(); c.ellipse(x, y, u * (.012 + kk * .06), u * (.003 + kk * .012), 0, 0, 7); c.stroke(); } }
+    for (const f of flecks) { const k = (now - f.t0) / 1.3; if (k <= 0) continue; const [x, y] = PT(f.px + f.vx * k, f.py + .09 * k * k + .01 * k), r = Math.max(2, u * .006) * f.r; c.save(); c.translate(x, y); c.rotate(f.sp * k); c.fillStyle = sil(.85 * (1 - k * k)); c.beginPath(); c.ellipse(0, 0, r * 1.8, r * .45, 0, 0, 7); c.fill(); c.restore(); }
+    // the green flash
+    { const k = (now - flashAt) / 1.9; if (k > 0 && k < 1) { const [ux] = sunAt(), a = Math.pow(Math.sin(Math.PI * k), .7), r = Math.max(11, u * .028); c.save(); c.translate(ux, hy - 1); c.scale(1, .5);
+      const g = c.createRadialGradient(0, 0, 0, 0, 0, r); g.addColorStop(0, `rgba(215,255,215,${a})`); g.addColorStop(.18, `rgba(110,255,150,${.9 * a})`); g.addColorStop(.5, `rgba(40,230,120,${.4 * a})`); g.addColorStop(1, 'rgba(30,210,110,0)'); c.fillStyle = g; c.beginPath(); c.arc(0, 0, r, Math.PI, 0); c.fill(); c.restore(); } }
+    // a shooting star
+    if (star) { const k = (now - star.t0) / .8; if (k > 0 && k < 1) { const n = Math.hypot(star.dx, star.dy), vx = star.dx / n, vy = star.dy / n, hx = star.x + vx * star.len * k, hy2 = star.y + vy * star.len * k, tl = star.len * .45 * Math.sin(Math.PI * k);
+      const g = c.createLinearGradient(hx, hy2, hx - vx * tl, hy2 - vy * tl); g.addColorStop(0, `rgba(255,252,240,${.95 * Math.sin(Math.PI * k)})`); g.addColorStop(1, 'rgba(255,252,240,0)'); c.save(); c.strokeStyle = g; c.lineWidth = 1.6; c.lineCap = 'round'; c.beginPath(); c.moveTo(hx, hy2); c.lineTo(hx - vx * tl, hy2 - vy * tl); c.stroke(); c.restore(); } }
+    // a whale breathing, far out
+    for (const sp of spouts) { const k = (now - sp.t0) / 3.2; if (k <= 0 || k >= 1) continue; const [x, y] = PT(sp.px, HFR + .0035), h = Math.max(7, u * .017), up = Math.min(1, k * 3), a = Math.sin(Math.PI * Math.min(1, k * 1.15)) * (.6 - .35 * dusk);
+      c.fillStyle = sil(.55 * Math.sin(Math.PI * k)); c.beginPath(); c.ellipse(x - h * .3, y + 1, h * .75, h * .09, 0, Math.PI, 0); c.fill();
+      for (let j = 0; j < 5; j++) { const q = j / 4, r = h * (.1 + .16 * q) * (.7 + k * .8); c.fillStyle = `rgba(255,248,238,${a * (1 - q * .55)})`; c.beginPath(); c.arc(x + k * h * .5 * q, y - h * q * up, r, 0, 7); c.fill(); } }
+    // a navigation light far out: one small white point that comes on at dusk and flashes on its own slow count
+    if (B.light && dusk > .55) { const [x, y] = PT(B.light[0], B.light[1]), ph = (now % 4) / 4, on = ph < .12 ? 1 : .0, a = clamp((dusk - .55) / .2, 0, 1) * on;
+      if (a > 0) { const g = c.createRadialGradient(x, y, 0, x, y, 7); g.addColorStop(0, `rgba(255,252,235,${a})`); g.addColorStop(.25, `rgba(255,250,225,${.5 * a})`); g.addColorStop(1, 'rgba(255,250,225,0)'); c.fillStyle = g; c.beginPath(); c.arc(x, y, 7, 0, 7); c.fill(); } }
+    // the Milky Way: only where the sky is this dark, and only on nights when the real moon is thin
+    if (B.milky && dusk > .8 && moonFull() < .35) { const a = clamp((dusk - .8) / .2, 0, 1) * (1 - moonFull() / .35); c.globalAlpha = a; c.drawImage(milkyPic(), offX, offY, D, D * HFR); c.globalAlpha = 1; }
+    drawRockCrabs();
+    // the crab and its hole
+    if (crab) {
+      const cb = crab, [x, y] = crabPos(), hx = offX + cb.hu * D, hy3 = ysAt(hx) + sandH() * cb.hd, s = scaleAt(y), r = Math.max(4.5, u * .0105) * s;
+      const grow = cb.phase === 'out' ? clamp(1 - (cb.until - now) / .7, 0, 1) : cb.phase === 'in' ? clamp((cb.until - now) / .35, 0, 1) : 1;
+      c.fillStyle = sil(.55); c.beginPath(); c.ellipse(hx, hy3, r * .9, r * .36, 0, 0, 7); c.fill();
+      const mix = (a, b) => Math.round(a + (b - a) * dusk), body = `rgb(${mix(232, 96)},${mix(204, 104)},${mix(168, 140)})`, dark = `rgba(${mix(120, 30)},${mix(84, 30)},${mix(60, 60)},.9)`;
+      c.save(); c.translate(x, y - r * .3 * grow); c.scale(grow, grow * .8);
+      c.fillStyle = sil(.3); c.beginPath(); c.ellipse(r * .2, r * .75, r * 1.5, r * .32, 0, 0, 7); c.fill();
+      c.strokeStyle = body; c.lineWidth = Math.max(1, r * .2); c.lineCap = 'round';
+      for (const sd of [-1, 1]) for (let j = 0; j < 4; j++) { const ph = Math.sin(cb.leg + j * 1.7 + (sd > 0 ? 1.1 : 0)) * .35, a0 = (-.5 + j * .36) + ph * .5; c.beginPath(); c.moveTo(sd * r * .75, a0 * r * .5); c.lineTo(sd * r * 1.45, a0 * r * 1.1 + r * .1); c.lineTo(sd * r * 1.8, a0 * r * 1.3 + r * .55); c.stroke(); }
+      c.fillStyle = body; c.beginPath(); c.ellipse(0, 0, r, r * .68, 0, 0, 7); c.fill();
+      c.beginPath(); c.ellipse(-r * .95, -r * .55, r * .34, r * .24, -.6, 0, 7); c.ellipse(r * .95, -r * .55, r * .42, r * .28, .6, 0, 7); c.fill();
+      c.strokeStyle = dark; c.lineWidth = Math.max(.8, r * .13); c.beginPath(); c.moveTo(-r * .3, -r * .5); c.lineTo(-r * .34, -r * 1.15); c.moveTo(r * .3, -r * .5); c.lineTo(r * .34, -r * 1.15); c.stroke();
+      c.fillStyle = dark; c.beginPath(); c.arc(-r * .34, -r * 1.2, r * .15, 0, 7); c.arc(r * .34, -r * 1.2, r * .15, 0, 7); c.fill();
+      c.restore();
+    }
+  }
+
+  // ---------- the card ----------
+  {
+    const menu = document.getElementById('menu'), wrap = document.getElementById('cardwrap'), sb = document.getElementById('c-snd');
+    document.documentElement.lang = LANG;
+    for (const k of ['sound', 'line', 'how']) document.getElementById('c-' + k).textContent = T9[k];
+        const live = () => soundOn && !!audio;
+    const show = () => { document.getElementById('c-state').textContent = live() ? T9.on : T9.off; sb.setAttribute('aria-pressed', String(live())); };
+    const places = document.getElementById('c-places'), placeEl = document.getElementById('c-place');
+    const marks = () => { placeEl.textContent = B.name; placeEl.hidden = PLACES.length > 1; places.hidden = PLACES.length < 2; for (const b of places.children) b.setAttribute('aria-current', String(b.dataset.k === cur)); document.getElementById('top').setAttribute('aria-label', B.name + '. ' + LABEL); };
+    const LABEL = document.getElementById('top').getAttribute('aria-label').replace(/^[^.]*\. /, '');
+    for (const k of PLACES) { const b = document.createElement('button'); b.type = 'button'; b.dataset.k = k; b.textContent = BEACHES[k].name; b.addEventListener('click', () => { if (k !== cur) { setBeach(k); setTimeout(marks, 800); } open(false); }); places.appendChild(b); }
+    marks();
+    const open = on => { wrap.hidden = !on; menu.setAttribute('aria-expanded', String(on)); show(); marks(); };
+    menu.addEventListener('click', () => { startAudio(); open(wrap.hidden); });
+    wrap.addEventListener('click', e => { if (e.target === wrap) open(false); });
+    sb.addEventListener('click', () => { if (audio) toggleSound(); setTimeout(show, 60); });
+    addEventListener('keydown', e => { if (e.key === 'Escape') { open(false); shelfEl.hidden = true; closeNote(); } });
+  }
+
+  // ---------- loop ----------
+  // visit: the seconds this beach has actually been watched (time with the page away does not count)
+  let last = 0, slow = .016, frames = 0, visit = 0; const duskBias = /dusk/.test(HASH) ? .9 : 0; let duskStep = null, sunTap = -9;
+  const sunAt = () => B.sun ? [offX + B.sun[0] * D, offY + B.sun[1] * D] : [-999, -999];
+  function frame(ms) {
+    const now = ms / 1000, raw = Math.min(1.5, now - last || .016), dt = Math.min(.05, raw); last = now;
+    if (cv.clientWidth !== W || cv.clientHeight !== H) {
+      // keep footprints where they were in the picture when the screen turns or resizes
+      const first = !W, kept = prints.map(p => [(p.x - offX) / D, (p.y - offY) / D]);
+      resize();
+      prints.forEach((p, i) => { p.x = offX + kept[i][0] * D; p.y = offY + kept[i][1] * D; });
+      if (first) trail(now, false);
+    }
+    visit += raw;
+    const want = duskStep === null ? clamp(visit / (14 * 60) + duskBias, 0, 1) : duskStep;
+    dusk += (want - dusk) * Math.min(1, raw * .9);
+    slow = slow * .95 + dt * .05; if (++frames > 90 && slow > .04 && GLS > 1) { GLS = Math.max(1, GLS - .25); glc.width = Math.round(W * GLS); glc.height = Math.round(H * GLS); frames = 0; }
+    ebb = clamp((visit - 20 * 60 / (PACE < 1 ? 8 : 1)) / (4 * 60 / (PACE < 1 ? 8 : 1)), 0, 1);
+    makeWaves(now); computeEdge(now, dt); updatePrints(now);
+    c.setTransform(DPR, 0, 0, DPR, 0, 0); c.clearRect(0, 0, W, H);
+    paint(now);
+    if (!plateReady) { requestAnimationFrame(frame); return; }
+    updateFind(now, dt); updateWorld(now, dt); drawShoreExtras(now); drawPrints(now); drawWorld(now); drawFinds(now);
+    { const rg = now - sunTap; if (rg >= 0 && rg < 1.4) { const [ux, uy] = sunAt(); c.strokeStyle = `rgba(255,236,200,${.6 * (1 - rg / 1.4)})`; c.lineWidth = 2; c.beginPath(); c.arc(ux, uy, 14 + rg * 60, 0, 7); c.stroke(); } }
+    if (audio && audio.ctx.state === 'running') ears.classList.add('gone');
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+
+<noscript><p style="position:fixed;inset:auto 0 20px;text-align:center;font:16px system-ui">Beachcombing needs JavaScript. <a href="/beachcombing/" style="color:inherit">About it</a></p></noscript>
+</body>
+</html>
