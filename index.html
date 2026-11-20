@@ -1,638 +1,423 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kahakai — Shopify apps + expert theme work</title>
-<meta name="description" content="Kahakai builds Shopify apps and does the deep theme work most stores can't get support for. Kōkua, our first app, is a free accessibility scan. The rest, we handle by hand.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>kahakai · games</title>
+<meta name="description" content="Kahakai is a small game studio. This page is a game: a beach bar at dusk, two slippers and a glass float. Thirteen things to do, in any order. Then the bar comes down.">
+<link rel="canonical" href="https://kahak.ai/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="kahakai">
+<meta property="og:title" content="kahakai · games">
+<meta property="og:description" content="A small game studio. This page is a game: a beach bar at dusk, two slippers and a glass float.">
+<meta property="og:url" content="https://kahak.ai/">
+<meta property="og:image" content="https://kahak.ai/share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" as="image" href="bar/m0.webp?v=0a8480a0">
+<style>@font-face { font-family: 'Newsreader'; font-style: normal; font-weight: 400 700; font-display: swap; src: url('/fonts/newsreader-latin.woff2') format('woff2'); }</style>
+<meta name="theme-color" content="#0d0a07">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-:root{
-  --ink:#17130e;
-  --ink-soft:#211a13;
-  --ink-deep:#100c07;
-  --paper:#efe7d8;
-  --paper-soft:rgba(239,231,216,0.72);
-  --paper-quiet:rgba(239,231,216,0.46);
-  --paper-faint:rgba(239,231,216,0.26);
-  --paper-line:rgba(239,231,216,0.1);
-  --paper-line-strong:rgba(239,231,216,0.2);
-  --copper:#d2704a;
-  --copper-soft:#e59468;
-  --copper-dim:rgba(210,112,74,0.16);
-  --teal:#4fa89b;
-  --teal-soft:#68bcae;
-  --sev-crit:#e2574c;
-  --sev-serious:#e0902f;
-  --sev-mod:#5fa9a0;
-  --sev-minor:rgba(239,231,216,0.4);
-  --serif:'Newsreader',serif;
-  --sans:'Geist',sans-serif;
-  --mono:'Geist Mono',monospace;
-}
-body{background:var(--ink);color:var(--paper);font-family:var(--sans);font-weight:400;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-.container{max-width:1180px;margin:0 auto;padding:0 2.5rem}
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.reveal{opacity:0;animation:fadeUp .9s cubic-bezier(.2,.7,.3,1) forwards}
-.reveal-1{animation-delay:.05s}.reveal-2{animation-delay:.2s}.reveal-3{animation-delay:.38s}.reveal-4{animation-delay:.56s}.reveal-5{animation-delay:.74s}.reveal-6{animation-delay:.92s}
-@media (prefers-reduced-motion:reduce){.reveal{opacity:1;animation:none}.scanline{display:none}}
-
-/* NAV */
-.nav{padding:1.5rem 0;border-bottom:1px solid var(--paper-line);position:sticky;top:0;z-index:20;background:rgba(23,19,14,.85);backdrop-filter:blur(12px)}
-.nav-inner{display:flex;justify-content:space-between;align-items:center}
-.nav-wm{font-family:var(--serif);font-weight:600;font-size:1.6rem;letter-spacing:-.02em;color:var(--paper);text-decoration:none;line-height:1}
-.nav-links{display:flex;gap:2.4rem;align-items:center}
-.nav-links a{font-family:var(--sans);font-size:.9rem;color:var(--paper-soft);text-decoration:none;letter-spacing:-.005em;transition:color .2s}
-.nav-links a:hover{color:var(--paper)}
-.nav-kokua{display:inline-flex;align-items:center;gap:.5rem;color:var(--paper) !important}
-.nav-kokua::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px rgba(79,168,155,.6)}
-.nav-cta{color:var(--paper) !important;padding:.5rem 1.1rem;border:1px solid var(--paper-line-strong);border-radius:2px;font-weight:500;transition:all .2s;font-size:.85rem !important}
-.nav-cta:hover{border-color:var(--copper);color:var(--copper) !important}
-
-/* HERO */
-.hero{padding:5.5rem 0 5rem;border-bottom:1px solid var(--paper-line);position:relative;background:radial-gradient(ellipse 80% 60% at 85% 10%,rgba(210,112,74,.07) 0%,transparent 50%),radial-gradient(ellipse 110% 90% at 50% 110%,rgba(16,12,7,.7) 0%,transparent 60%)}
-.hero-meta{font-family:var(--mono);font-size:10px;letter-spacing:.24em;color:var(--paper-quiet);text-transform:uppercase;display:flex;gap:2rem;margin-bottom:4rem;padding-bottom:1.25rem;border-bottom:1px solid var(--paper-line)}
-.hero-meta .copper{color:var(--copper)}
-.hero-meta span{display:flex;align-items:center;gap:.6rem}
-.hero-meta span::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--paper-faint)}
-.hero-meta .copper::before{background:var(--copper);box-shadow:0 0 8px rgba(210,112,74,.45)}
-.hero-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:4.5rem;align-items:center}
-.hero-line{font-family:var(--serif);font-weight:400;font-size:clamp(3rem,6.2vw,5.3rem);letter-spacing:-.021em;line-height:1;color:var(--paper);max-width:15ch;margin-bottom:2rem}
-.hero-line em{font-style:italic;color:var(--copper-soft)}
-.hero-sub{font-family:var(--sans);font-size:1.16rem;line-height:1.6;color:var(--paper-soft);max-width:46ch;margin-bottom:2.5rem}
-.hero-sub b{color:var(--paper);font-weight:500}
-.hero-ctas{display:flex;gap:1.75rem;align-items:center;flex-wrap:wrap}
-.btn-primary{background:var(--paper);color:var(--ink);padding:.95rem 1.9rem;border-radius:2px;font-family:var(--sans);font-size:.95rem;font-weight:500;text-decoration:none;letter-spacing:-.005em;transition:all .2s}
-.btn-primary:hover{background:var(--copper-soft);color:var(--ink);transform:translateY(-1px)}
-.btn-ghost{color:var(--paper);font-size:.95rem;font-weight:400;text-decoration:none;letter-spacing:-.005em;border-bottom:1px solid var(--paper-line-strong);padding-bottom:2px;transition:all .2s}
-.btn-ghost:hover{color:var(--copper-soft);border-color:var(--copper-soft)}
-.hero-trust{margin-top:2.75rem;padding-top:1.5rem;border-top:1px solid var(--paper-line);font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--paper-quiet);text-transform:uppercase;display:flex;flex-wrap:wrap;gap:1.25rem;align-items:center}
-.hero-trust span{display:inline-flex;align-items:center}
-.hero-trust span+span::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--copper);display:inline-block;margin-right:1.25rem}
-.hero-trust .trust-star{color:var(--copper);margin-right:.55rem;font-size:12px}
-
-/* HERO KŌKUA CARD */
-.kcard{background:linear-gradient(180deg,rgba(239,231,216,.04),rgba(239,231,216,.015));border:1px solid var(--paper-line-strong);border-radius:4px;padding:1.5rem;position:relative;overflow:hidden}
-.kcard-top{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:1.1rem;border-bottom:1px solid var(--paper-line);margin-bottom:1.1rem}
-.kcard-name{font-family:var(--serif);font-weight:600;font-size:1.6rem;letter-spacing:-.015em;color:var(--paper)}
-.kcard-tag{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--teal)}
-.kcard-desc{font-size:.92rem;color:var(--paper-soft);line-height:1.5;margin-bottom:1.25rem}
-.kcard-bar{display:flex;gap:3px;margin-bottom:.7rem}
-.kcard-bar i{height:6px;border-radius:2px;flex:1}
-.kcard-legend{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--paper-quiet);margin-bottom:1.3rem}
-.kcard-foot{display:flex;justify-content:space-between;align-items:center;padding-top:1.1rem;border-top:1px solid var(--paper-line)}
-.kcard-meta{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--paper-quiet)}
-.kcard-link{font-family:var(--sans);font-size:.85rem;color:var(--teal-soft);text-decoration:none;font-weight:500}
-.kcard-link:hover{color:var(--teal)}
-
-/* SECTION HEADS (shared) */
-.sec{padding:5.5rem 0;border-bottom:1px solid var(--paper-line)}
-.sec-label{font-family:var(--mono);font-size:10px;letter-spacing:.24em;color:var(--copper);text-transform:uppercase;margin-bottom:1rem}
-.sec-title{font-family:var(--serif);font-weight:400;font-size:clamp(2rem,4vw,3.25rem);letter-spacing:-.02em;line-height:1.05;color:var(--paper);max-width:26ch}
-.sec-title em{font-style:italic;color:var(--copper-soft)}
-
-/* KŌKUA SHOWCASE */
-.kokua{background:var(--ink-deep);position:relative;overflow:hidden}
-.kokua::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 45% at 78% 15%,rgba(79,168,155,.08) 0%,transparent 60%);pointer-events:none}
-.kokua-inner{position:relative}
-.kokua .sec-label{color:var(--teal)}
-.kokua .sec-title em{color:var(--teal-soft)}
-.kokua-head{display:grid;grid-template-columns:1.1fr 1fr;gap:3.5rem;align-items:end;margin-bottom:3rem}
-.kokua-lead{font-family:var(--sans);font-size:1.1rem;line-height:1.65;color:var(--paper-soft);max-width:46ch}
-.kokua-lead b{color:var(--paper);font-weight:500}
-.kokua-props{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--paper-line);border-bottom:1px solid var(--paper-line);margin-bottom:3.5rem}
-.kprop{padding:1.75rem 1.75rem 1.75rem 0;border-right:1px solid var(--paper-line)}
-.kprop:last-child{border-right:none;padding-right:0}
-.kprop:not(:first-child){padding-left:1.75rem}
-.kprop-h{font-family:var(--serif);font-weight:500;font-size:1.2rem;letter-spacing:-.01em;color:var(--paper);margin-bottom:.5rem}
-.kprop-p{font-size:.92rem;line-height:1.55;color:var(--paper-quiet)}
-
-/* PRODUCT FRAME (browser mock) */
-.frame{border:1px solid var(--paper-line-strong);border-radius:8px;overflow:hidden;background:#140f09;box-shadow:0 40px 90px -50px rgba(0,0,0,.7)}
-.frame-bar{display:flex;align-items:center;gap:.9rem;padding:.85rem 1.1rem;background:rgba(239,231,216,.03);border-bottom:1px solid var(--paper-line)}
-.frame-dots{display:flex;gap:.45rem}
-.frame-dots i{width:11px;height:11px;border-radius:50%;background:var(--paper-faint)}
-.frame-url{flex:1;font-family:var(--mono);font-size:11px;letter-spacing:.02em;color:var(--paper-quiet);background:rgba(16,12,7,.55);border:1px solid var(--paper-line);border-radius:3px;padding:.35rem .75rem;text-align:center}
-.frame-url b{color:var(--paper-soft);font-weight:500}
-.frame-pill{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);border:1px solid rgba(79,168,155,.4);border-radius:100px;padding:.25rem .6rem}
-.frame-body{padding:1.9rem 2rem 1.75rem;position:relative}
-.scanline{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--teal),transparent);opacity:.55;animation:scan 3.6s ease-in-out infinite}
-@keyframes scan{0%{transform:translateY(0)}50%{transform:translateY(360px)}100%{transform:translateY(0)}}
-.report-top{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:1rem;padding-bottom:1.4rem;border-bottom:1px solid var(--paper-line);margin-bottom:1.6rem}
-.report-h{font-family:var(--serif);font-weight:500;font-size:1.3rem;letter-spacing:-.01em;color:var(--paper)}
-.report-h span{color:var(--paper-quiet);font-family:var(--mono);font-size:11px;letter-spacing:.05em;display:block;margin-top:.35rem;text-transform:none;font-weight:400}
-.report-stamp{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--paper-quiet);text-align:right;line-height:1.7}
-.sev-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.8rem}
-.sev{border:1px solid var(--paper-line);border-radius:4px;padding:1rem 1.1rem}
-.sev-n{font-family:var(--serif);font-weight:500;font-size:2.1rem;line-height:1;letter-spacing:-.02em}
-.sev-l{font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--paper-quiet);margin-top:.5rem}
-.sev.c .sev-n{color:var(--sev-crit)}.sev.s .sev-n{color:var(--sev-serious)}.sev.m .sev-n{color:var(--sev-mod)}.sev.n .sev-n{color:var(--paper-soft)}
-.sev.c{border-color:rgba(226,87,76,.35)}.sev.s{border-color:rgba(224,144,47,.3)}
-.issues{display:flex;flex-direction:column}
-.issue{display:grid;grid-template-columns:96px 1fr auto;gap:1.25rem;padding:1.05rem 0;border-bottom:1px solid var(--paper-line);align-items:start}
-.issue:last-child{border-bottom:none}
-.chip{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:.28rem .5rem;border-radius:3px;text-align:center;font-weight:500}
-.chip.c{color:var(--sev-crit);background:rgba(226,87,76,.12);border:1px solid rgba(226,87,76,.3)}
-.chip.s{color:var(--sev-serious);background:rgba(224,144,47,.1);border:1px solid rgba(224,144,47,.28)}
-.chip.m{color:var(--sev-mod);background:rgba(95,169,160,.1);border:1px solid rgba(95,169,160,.28)}
-.issue-id{font-family:var(--mono);font-size:.9rem;color:var(--paper);font-weight:500;margin-bottom:.3rem}
-.issue-id em{color:var(--paper-quiet);font-style:normal;font-size:.78rem;letter-spacing:.04em;margin-left:.5rem}
-.issue-desc{font-size:.88rem;color:var(--paper-quiet);line-height:1.5}
-.issue-desc b{color:var(--teal-soft);font-weight:500}
-.issue-count{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--paper-quiet);text-transform:uppercase;text-align:right;white-space:nowrap;padding-top:.15rem}
-.report-note{margin-top:1.5rem;padding:1rem 1.15rem;border:1px dashed var(--paper-line-strong);border-radius:4px;font-family:var(--mono);font-size:10.5px;line-height:1.7;letter-spacing:.03em;color:var(--paper-quiet)}
-.report-note b{color:var(--paper-soft);font-weight:500}
-.kokua-cta{display:flex;gap:1.75rem;align-items:center;flex-wrap:wrap;margin-top:2.5rem}
-.kokua-cta .note{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--paper-quiet)}
-
-/* PROBLEM */
-.problem-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:5rem;align-items:start}
-.problem-title{font-family:var(--serif);font-weight:400;font-size:clamp(1.85rem,3.5vw,2.85rem);letter-spacing:-.02em;line-height:1.08;color:var(--paper);max-width:14ch}
-.problem-title em{font-style:italic;color:var(--copper-soft)}
-.problem-body{font-family:var(--sans);font-size:1.08rem;line-height:1.7;color:var(--paper-soft);max-width:52ch}
-.problem-body p{margin-bottom:1.25rem}.problem-body p:last-child{margin-bottom:0}
-.problem-body strong{color:var(--paper);font-weight:500}
-
-/* THEMES */
-.themes-head{display:grid;grid-template-columns:1fr 1fr;gap:4rem;margin-bottom:3.5rem;align-items:end;padding-bottom:1.5rem;border-bottom:1px solid var(--paper-line)}
-.themes-count{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--paper-quiet);text-transform:uppercase;text-align:right;line-height:1.8}
-.themes-count strong{color:var(--paper);font-weight:500}
-.themes-groups{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--paper-line)}
-.theme-group{padding:2rem 1.5rem 2rem 0;border-right:1px solid var(--paper-line);border-bottom:1px solid var(--paper-line)}
-.theme-group:nth-child(2){padding-left:1.5rem}.theme-group:nth-child(3){padding-left:1.5rem;border-right:none}
-.theme-group-studio{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--copper);text-transform:uppercase;margin-bottom:.4rem}
-.theme-group-tenure{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--paper-quiet);text-transform:uppercase;margin-bottom:1.5rem}
-.theme-names{font-family:var(--serif);font-weight:400;font-size:1.45rem;line-height:1.6;letter-spacing:-.01em;color:var(--paper)}
-
-/* CASE */
-.case-card{background:rgba(239,231,216,.02);border:1px solid var(--paper-line);padding:2.75rem 2.75rem 2.25rem;margin-top:3rem}
-.case-meta{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--paper-quiet);text-transform:uppercase;display:flex;flex-wrap:wrap;padding-bottom:1.75rem;border-bottom:1px solid var(--paper-line);margin-bottom:2rem}
-.case-meta span{display:inline-flex;align-items:center;margin-right:1.5rem}
-.case-meta span:last-child{margin-right:0}
-.case-meta span+span::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--copper);display:inline-block;margin-right:1.5rem}
-.case-headline{font-family:var(--serif);font-weight:500;font-size:1.9rem;letter-spacing:-.018em;line-height:1.15;color:var(--paper);max-width:24ch;margin-bottom:1.5rem}
-.case-headline em{font-style:italic;color:var(--copper-soft)}
-.case-body{font-family:var(--sans);font-size:1.05rem;line-height:1.7;color:var(--paper-soft);max-width:68ch;margin-bottom:2.5rem}
-.case-results{display:grid;grid-template-columns:repeat(3,1fr);gap:2.5rem;padding:1.75rem 0;border-top:1px solid var(--paper-line);border-bottom:1px solid var(--paper-line);margin-bottom:1.5rem}
-.case-result-label{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--paper-quiet);text-transform:uppercase;margin-bottom:.6rem}
-.case-result-value{font-family:var(--serif);font-style:italic;font-weight:400;font-size:1.35rem;color:var(--copper-soft);letter-spacing:-.01em;line-height:1.25}
-.case-footer{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--paper-quiet);text-transform:uppercase}
-
-/* PROCESS + SERVICES rows */
-.rowlist{display:grid;grid-template-columns:1fr;margin-top:3.5rem}
-.row{display:grid;grid-template-columns:70px 1.2fr 1.5fr auto;gap:2.5rem;padding:2.5rem 0;border-bottom:1px solid var(--paper-line);align-items:baseline;transition:padding-left .3s ease}
-.row:hover{padding-left:1rem}.row:last-child{border-bottom:none}
-.row-num{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--paper-quiet);font-weight:500}
-.row-name{font-family:var(--serif);font-weight:500;font-size:2.05rem;letter-spacing:-.018em;color:var(--paper);line-height:1.05}
-.row-name em{font-style:italic;color:var(--copper-soft)}
-.row-desc{font-family:var(--sans);font-size:.98rem;color:var(--paper-soft);line-height:1.55}
-.row-meta{text-align:right;font-family:var(--serif);font-style:italic;font-weight:500;font-size:1.15rem;color:var(--paper);letter-spacing:-.01em;line-height:1.3}
-.row-kind{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--paper-quiet);text-transform:uppercase;text-align:right;line-height:1.8}
-.row-kind strong{display:block;color:var(--paper);font-weight:500;font-family:var(--serif);font-style:italic;font-size:1.2rem;letter-spacing:-.01em;text-transform:none}
-
-/* PULL QUOTE */
-.pullquote{padding:7rem 0;border-bottom:1px solid var(--paper-line);background:var(--ink-deep);position:relative;overflow:hidden}
-.pullquote::before{content:'';position:absolute;top:-20%;left:50%;width:2px;height:140%;background:linear-gradient(180deg,transparent,rgba(210,112,74,.07) 50%,transparent);transform:translateX(-50%);pointer-events:none}
-.pullquote-line{font-family:var(--serif);font-weight:400;font-size:clamp(1.85rem,4vw,3.1rem);letter-spacing:-.018em;line-height:1.14;color:var(--paper);max-width:30ch;margin:0 auto 2.75rem;text-align:center;position:relative}
-.pullquote-line em{font-style:italic;color:var(--copper-soft)}
-.pullquote-foot{display:flex;justify-content:center;gap:2rem;font-family:var(--mono);font-size:10px;letter-spacing:.24em;color:var(--paper-quiet);text-transform:uppercase;position:relative}
-.pullquote-foot span:last-child{color:var(--copper)}
-
-/* TESTIMONIALS */
-.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2.5rem;margin-top:3.5rem}
-.testimonial{background:rgba(239,231,216,.02);border:1px solid var(--paper-line);padding:2rem 1.85rem 1.85rem;display:flex;flex-direction:column}
-.testimonial-mark{font-family:var(--serif);font-style:italic;font-weight:400;font-size:3.5rem;color:var(--copper);line-height:.7;margin-bottom:.5rem}
-.testimonial-quote{font-family:var(--serif);font-weight:400;font-size:1.2rem;line-height:1.5;color:var(--paper);letter-spacing:-.005em;margin-bottom:2rem;flex-grow:1}
-.testimonial-attr{padding-top:1.25rem;border-top:1px solid var(--copper-dim)}
-.testimonial-name{font-family:var(--sans);font-weight:500;color:var(--paper);font-size:.95rem;letter-spacing:-.005em}
-.testimonial-role{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--paper-quiet);text-transform:uppercase;margin-top:.4rem}
-
-/* MEET */
-.meet-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:4rem;align-items:start}
-.meet-photo{aspect-ratio:4/5;background-image:url('jamey-duotone.jpg');background-size:cover;background-position:center;border:1px solid var(--paper-line)}
-.meet-content{display:flex;flex-direction:column;gap:1.5rem}
-.meet-title{font-family:var(--serif);font-weight:400;font-size:clamp(1.95rem,3.75vw,2.85rem);letter-spacing:-.02em;line-height:1.1;color:var(--paper);max-width:22ch}
-.meet-title em{font-style:italic;color:var(--copper-soft)}
-.meet-body{font-family:var(--sans);font-size:1.05rem;line-height:1.7;color:var(--paper-soft);max-width:52ch}
-.meet-body p{margin-bottom:1.25rem}.meet-body p:last-child{margin-bottom:0}
-.meet-body strong{color:var(--paper);font-weight:500}
-.ledger{background:rgba(239,231,216,.025);border:1px solid var(--paper-line);padding:1.6rem;margin-top:.5rem}
-.ledger-head{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:9px;letter-spacing:.25em;color:var(--paper-quiet);text-transform:uppercase;padding-bottom:1.1rem;border-bottom:1px solid var(--paper-line);margin-bottom:.25rem}
-.ledger-head .copper{color:var(--copper)}
-.ledger-row{padding:1rem 0;border-bottom:1px solid var(--paper-line)}
-.ledger-row:last-child{border-bottom:none}
-.ledger-years{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--paper-quiet);text-transform:uppercase}
-.ledger-studio{font-family:var(--serif);font-weight:500;font-size:1.35rem;letter-spacing:-.012em;color:var(--paper);line-height:1.1;margin-top:.2rem}
-.ledger-role{font-family:var(--sans);font-size:.85rem;color:var(--paper-quiet);margin-top:.25rem}
-.ledger-foot{display:flex;justify-content:space-between;padding:1.1rem 0 .25rem;border-top:1px solid var(--paper-line);margin-top:.5rem;font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--copper);text-transform:uppercase}
-.meet-sig{padding-top:1.5rem;border-top:1px solid var(--paper-line);font-family:var(--serif);font-style:italic;font-size:1.3rem;color:var(--paper);letter-spacing:-.01em}
-.meet-cta{font-family:var(--serif);font-style:italic;font-weight:400;font-size:1.25rem;color:var(--paper);line-height:1.5;letter-spacing:-.01em;max-width:52ch;padding-top:.5rem}
-.meet-cta a{color:var(--copper-soft);text-decoration:none;border-bottom:1px solid var(--copper-dim);transition:color .2s,border-color .2s}
-.meet-cta a:hover{color:var(--copper);border-color:var(--copper)}
-
-/* CLOSER */
-.closer{padding:8rem 0 7rem;text-align:center;position:relative;background:radial-gradient(ellipse 60% 50% at 50% 30%,rgba(210,112,74,.07) 0%,transparent 60%)}
-.closer-line{font-family:var(--serif);font-weight:400;font-size:clamp(3rem,6.5vw,5.5rem);letter-spacing:-.021em;line-height:1;color:var(--paper);max-width:16ch;margin:0 auto 2rem}
-.closer-line em{font-style:italic;color:var(--copper-soft)}
-.closer-sub{font-family:var(--sans);font-size:1.1rem;color:var(--paper-soft);max-width:44ch;margin:0 auto 3rem;line-height:1.55}
-.closer-ctas{display:flex;gap:2rem;align-items:center;justify-content:center;flex-wrap:wrap}
-.closer-email{display:inline-flex;align-items:baseline;gap:.85rem;flex-wrap:wrap;justify-content:center}
-.email-promise{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--paper-quiet);text-transform:uppercase}
-.email-promise::before{content:'·';margin-right:.7rem;color:var(--copper)}
-
-/* FOOT */
-.foot{padding:2.5rem 0;border-top:1px solid var(--paper-line);display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--paper-quiet);text-transform:uppercase;flex-wrap:wrap;gap:1rem}
-.foot-wm{font-family:var(--serif);font-size:1.2rem;font-weight:600;color:var(--paper);text-transform:none;letter-spacing:-.02em}
-.foot-links{display:flex;gap:1.5rem}
-.foot-links a{color:var(--paper-quiet);text-decoration:none;transition:color .2s}
-.foot-links a:hover{color:var(--copper)}
-
-/* RESPONSIVE */
-@media (max-width:900px){
-  .container{padding:0 1.5rem}
-  .hero{padding:3.5rem 0 3rem}
-  .hero-meta{flex-wrap:wrap;gap:1rem}
-  .hero-grid{grid-template-columns:1fr;gap:2.75rem}
-  .hero-trust{flex-direction:column;align-items:flex-start;gap:.75rem}
-  .hero-trust span+span::before{display:none}
-  .kokua-head{grid-template-columns:1fr;gap:1.75rem}
-  .kokua-props{grid-template-columns:1fr}
-  .kprop{padding:1.5rem 0;border-right:none;border-bottom:1px solid var(--paper-line)}
-  .kprop:last-child{border-bottom:none}.kprop:not(:first-child){padding-left:0}
-  .sev-tiles{grid-template-columns:repeat(2,1fr)}
-  .issue{grid-template-columns:1fr;gap:.5rem}
-  .issue-count{text-align:left}
-  .frame-body{padding:1.4rem 1.1rem}
-  .problem-grid,.themes-head,.meet-grid{grid-template-columns:1fr;gap:2rem}
-  .themes-count{text-align:left}
-  .themes-groups{grid-template-columns:1fr}
-  .theme-group{padding-left:0 !important;border-right:none !important}
-  .row{grid-template-columns:1fr;gap:.75rem}
-  .row:hover{padding-left:0}
-  .row-meta,.row-kind{text-align:left}
-  .case-card{padding:1.75rem 1.5rem 1.5rem}
-  .case-results{grid-template-columns:1fr;gap:1.5rem}
-  .testimonials-grid{grid-template-columns:1fr;gap:1.75rem}
-  .meet-photo{aspect-ratio:3/4;max-width:320px}
-  .pullquote,.closer{padding:4.5rem 0}
-  .nav-links a:not(.nav-cta):not(.nav-kokua){display:none}
-}
+  html, body { margin: 0; height: 100%; background: #0d0a07; overflow: hidden; overscroll-behavior: none; }
+  body { display: grid; place-items: center; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+  * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  #stage { position: relative; overflow: hidden; opacity: 0; transition: opacity .9s ease; }
+  #stage.in { opacity: 1; }
+  canvas { display: block; width: 100%; height: 100%; }
+  .icon { position: absolute; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(239,231,216,.28); background: rgba(23,19,14,.45); color: #efe7d8; display: grid; place-items: center; padding: 0; cursor: pointer; }
+  #snd { top: max(10px, env(safe-area-inset-top, 0px)); right: max(10px, env(safe-area-inset-right, 0px)); border-color: #d2704a; box-shadow: 0 0 0 0 rgba(210,112,74,.6); animation: ask 2.2s ease-out infinite; }
+  #snd.asked { animation: none; border-color: rgba(239,231,216,.28); }
+  @keyframes ask { 0% { box-shadow: 0 0 0 0 rgba(210,112,74,.55); } 70%, 100% { box-shadow: 0 0 0 14px rgba(210,112,74,0); } }
+  @media (prefers-reduced-motion: reduce) { #snd { animation: none; } #stage { transition: none; } }
+  #bottle, #drink { position: absolute; background: none; border: 0; padding: 0; cursor: pointer; }
+  #menu { position: absolute; display: none; width: 290px; max-width: 78vw; box-sizing: border-box; background: #efe7d8; color: #17130e; padding: 16px 18px 14px; border-radius: 3px; transform: rotate(-2.2deg); transform-origin: 20% 100%; box-shadow: 0 10px 28px rgba(0,0,0,.6);
+    font: 400 15px/1.35 Georgia, 'Iowan Old Style', serif; }
+  #menu, #menu *, #note, #note * { -webkit-user-select: text; user-select: text; }
+  #menu h2 { font: 600 24px/1 'Newsreader', 'Iowan Old Style', Georgia, serif; letter-spacing: -.02em; margin: 0 0 2px; border-bottom: 1.5px solid #9e4827; padding-bottom: 7px; }
+  #menu .sec { font: 500 10.5px/1 system-ui, sans-serif; letter-spacing: .16em; text-transform: uppercase; color: #9e4827; margin: 12px 0 5px; }
+  #menu .row { display: flex; align-items: baseline; gap: 6px; padding: 5px 0; color: #17130e; text-decoration: none; background: none; border: 0; width: 100%; text-align: left; font: inherit; cursor: pointer; }
+  #menu div.row { cursor: default; }
+  #menu .row b { font-weight: 600; white-space: nowrap; } #menu .row i { flex: 1; border-bottom: 1.5px dotted rgba(23,19,14,.35); transform: translateY(-3px); } #menu .row span { color: #326b63; white-space: nowrap; font-style: italic; }
+  #menu .addr { margin-top: 2px; font-weight: 600; }
+  #note { line-height: 1.5; text-align: center; position: absolute; display: none; background: #efe7d8; color: #17130e; padding: 10px 16px; border-radius: 3px; transform: rotate(-3deg); box-shadow: 0 6px 18px rgba(0,0,0,.5); font: 600 17px Georgia, 'Iowan Old Style', serif; white-space: nowrap; }
+  #note a { color: #17130e; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  noscript { position: fixed; inset: 0; display: grid; place-content: center; text-align: center; color: #efe7d8; font: 18px/1.6 Georgia, serif; padding: 24px; }
+  noscript a { color: #68bcae; }
+  :focus-visible { outline: 2px solid #68bcae; outline-offset: 3px; }
 </style>
 </head>
 <body>
-
-<nav class="nav reveal reveal-1">
-  <div class="container nav-inner">
-    <a href="#" class="nav-wm">kahakai</a>
-    <div class="nav-links">
-      <a href="#kokua" class="nav-kokua">Kōkua</a>
-      <a href="#work">Work</a>
-      <a href="#services">Services</a>
-      <a href="#meet">About</a>
-      <a href="#book" class="nav-cta">Book a call</a>
-    </div>
+<div id="stage">
+  <canvas id="c" width="783" height="1206" role="img" aria-label="A beach bar at dusk, looking out its window at the sea. A surfboard over the window reads kahakai. Two slippers on the bar flip a glass float. Tap the right or left side, or press the arrow keys, to flip. There are thirteen things to do, in any order: the life ring, the bucket, the cooler, the lantern, the surfboard and eight bulbs. When all are done the surfboard falls and takes the front wall with it, and the bar is left open on the beach."></canvas>
+  <button id="snd" class="icon" aria-label="Sound is off. Turn sound on." aria-pressed="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h4l5-4v12l-5-4H4z"/><path id="sx" d="M17 9l5 6m0-6l-5 6"/></svg></button>
+  <button id="bottle" aria-label="A bottle with a note in it"></button>
+  <div id="note"><a href="mailto:aloha@kahak.ai">aloha@kahak.ai</a></div>
+  <button id="drink" aria-label="The drink on the bar. It is the menu." aria-expanded="false" aria-controls="menu"></button>
+  <div id="menu" role="dialog" aria-label="Menu">
+    <h2>kahakai</h2>
+    <div class="sec">On tonight</div>
+    <div class="row"><b>The bar</b><i></i><span>you're in it</span></div>
+    <div class="row"><b>More games</b><i></i><span>on the way</span></div>
+    <div class="sec">From the bar</div>
+    <button class="row" id="m-sound"><b>Sound</b><i></i><span id="m-sound-v">off</span></button>
+    <button class="row" id="again"><b>Start the night again</b><i></i><span>&#8634;</span></button>
+    <div class="sec">Write to us</div>
+    <div class="addr">aloha@kahak.ai</div>
   </div>
-</nav>
+</div>
+<p class="sr">Kahakai is a small game studio. Write to <a href="mailto:aloha@kahak.ai">aloha@kahak.ai</a>.</p>
+<p class="sr" id="live" aria-live="polite"></p>
+<noscript><div><strong>kahakai</strong><br>A small game studio. This page is a game; it needs JavaScript.<br><a href="mailto:aloha@kahak.ai">aloha@kahak.ai</a></div></noscript>
+<script src="bar/sim.js?v=0a8480a0"></script>
+<script>
+// The beach bar. Every picture is a render (blender/shore.py): one big picture of the room for each way it can be lit, cut to fit
+// whatever screen this is, with the things that move laid over it as cut-outs. The ending is the same room coming down.
+// Everything is drawn in the coordinates of the first, phone-shaped frame (783 x 1206), which sits inside the big picture at (OX, OY).
+const MW = 1931, MH = 1537, OX = 574, OY = 79, W = 783, H = 1206, PPM = H / 3.06, CZ = 1.72;
+const X = x => W / 2 + x * PPM, Y = z => H / 2 - (z - CZ) * PPM;
+const SPR = {"sl": {"x": 26, "y": 923, "w": 241, "h": 135}, "sr": {"x": 516, "y": 923, "w": 240, "h": 135}, "fl": {"x": 568, "y": 922, "w": 71, "h": 72}, "ring": {"x": 216, "y": 386, "w": 253, "h": 253}, "bucket": {"x": 123, "y": 652, "w": 114, "h": 149}, "board0": {"x": -6, "y": 36, "w": 796, "h": 153}, "board3": {"x": -6, "y": 36, "w": 796, "h": 153}, "lan0": {"x": 497, "y": 404, "w": 65, "h": 153}, "lan3": {"x": 497, "y": 404, "w": 65, "h": 153}, "lanx": {"x": 497, "y": 404, "w": 65, "h": 153}, "lid0": {"x": 491, "y": 730, "w": 188, "h": 25}, "lid1": {"x": 491, "y": 659, "w": 176, "h": 88}, "W": 783, "H": 1206, "fore_n": {"x": -574, "y": 939, "w": 1931, "h": 519}, "fore_e": {"x": -574, "y": 939, "w": 1931, "h": 519}, "bowl": {"x": 305, "y": 1074, "w": 173, "h": 91}, "bowl_e": {"x": 305, "y": 1074, "w": 173, "h": 91}, "sl_e": {"x": 26, "y": 933, "w": 241, "h": 135}, "sr_e": {"x": 515, "y": 932, "w": 242, "h": 136}};
+const cv = document.getElementById('c'), g = cv.getContext('2d'), stage = document.getElementById('stage');
+const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const img = {}; let loaded = 0, endReady = false;
+const NAMES = ['m0.webp', 'm1.webp', 'm2.webp', 'm3.webp', 'mn.webp', 'sl.png', 'sr.png', 'fl.png', 'ring.png', 'bucket.png', 'bowl.png', 'board0.png', 'board3.png', 'lan0.png', 'lan3.png', 'lanx.png', 'lid0.png', 'lid1.png'];
+const LATER = ['open.webp', 'end.webp', 'wall.webp', 'fore_n.webp', 'fore_e.webp', 'bowl_e.png', 'sl_e.png', 'sr_e.png'];      // the ending's pictures, fetched once the game is running
+const load = (list, then) => { let n = 0; for (const f of list) { const i = new Image(); i.onload = () => { if (++n === list.length) then(); }; i.src = 'bar/' + f + '?v=0a8480a0'; img[f.split('.')[0]] = i; } };
+load(NAMES, () => { start(); load(LATER, () => { endReady = true; }); });
 
-<!-- HERO -->
-<section class="hero">
-  <div class="container">
-    <div class="hero-meta reveal reveal-2">
-      <span class="copper">Shopify apps + expert theme work</span>
-      <span>Livingston, Montana</span>
-    </div>
-    <div class="hero-grid">
-      <div class="hero-left">
-        <h1 class="hero-line reveal reveal-3">We make Shopify <em>stop needing you.</em></h1>
-        <p class="hero-sub reveal reveal-4">Kahakai builds Shopify apps and does the deep theme work most stores can't get support for. <b>Kōkua</b>, our first app, is a free accessibility scan. The rest, we handle by hand.</p>
-        <div class="hero-ctas reveal reveal-5">
-          <a href="https://kokua.kahak.ai" class="btn-primary">Try Kōkua — free scan</a>
-          <a href="#work" class="btn-ghost">See the theme work →</a>
-        </div>
-        <div class="hero-trust reveal reveal-6">
-          <span><span class="trust-star">✦</span> Shopify Partner</span>
-          <span>11 years in premium themes</span>
-          <span>Read-only, always</span>
-          <span>Replies within 1 business day</span>
-        </div>
-      </div>
-      <aside class="kcard reveal reveal-4">
-        <div class="kcard-top">
-          <div class="kcard-name">Kōkua</div>
-          <div class="kcard-tag">The app · free scan</div>
-        </div>
-        <p class="kcard-desc">Scans your live storefront for WCAG 2.2 AA issues and hands back plain-English, Shopify-specific fixes. It never touches your theme.</p>
-        <div class="kcard-bar">
-          <i style="background:var(--sev-crit);flex:3"></i>
-          <i style="background:var(--sev-serious);flex:7"></i>
-          <i style="background:var(--sev-mod);flex:5"></i>
-          <i style="background:var(--sev-minor);flex:4"></i>
-        </div>
-        <div class="kcard-legend"><span>3 critical</span><span>7 serious</span><span>5 mod</span><span>4 minor</span></div>
-        <div class="kcard-foot">
-          <div class="kcard-meta">WCAG 2.2 AA · read-only</div>
-          <a href="https://kokua.kahak.ai" class="kcard-link">Scan your store →</a>
-        </div>
-      </aside>
-    </div>
-  </div>
-</section>
+// The view: as much of the big picture as this screen's shape allows. A phone sees the old frame and more bar below it;
+// a wide screen sees the rest of the bar either side. Nothing is ever stretched.
+const HMIN = 1250;      // the least height that still holds the surfboard at the top and the bottle at the bottom
+let view = { x: OX, y: OY, w: W, h: H, k: 1, q: 1 };
+const px = x => (x + OX - view.x) * view.k, py = y => (y + OY - view.y) * view.k;
+function fit() {
+  const iw = innerWidth, ih = innerHeight, a = iw / ih; let vw = MH * a, vh = MH;
+  if (vw < W) { vw = W; vh = Math.min(MH, W / a); } else if (vw > MW) { vw = MW; vh = Math.min(MH, Math.max(HMIN, MW / a)); }
+  const k = Math.min(iw / vw, ih / vh), q = Math.min(1, k * (window.devicePixelRatio || 1));
+  view = { x: (MW - vw) / 2, y: (MH - vh) * (OY + 26) / (MH - HMIN),      // a wide screen gives up the bare wall over the board before it gives up the bar
+    w: vw, h: vh, k, q };
+  stage.style.width = vw * k + 'px'; stage.style.height = vh * k + 'px'; cv.width = Math.round(vw * q); cv.height = Math.round(vh * q);
+  const put = (id, x, y, w, h) => { const e = document.getElementById(id).style; e.left = px(x) + 'px'; e.top = py(y) + 'px'; if (w) { e.width = w * k + 'px'; e.height = h * k + 'px'; } };
+  put('bottle', 548, 1160, 130, 84); put('drink', 146, 1090, 88, 132); put('note', 400, 1100); document.getElementById('note').style.left = Math.max(8, Math.min(px(400), vw * k - 226)) + 'px';
+  const m = document.getElementById('menu').style, left = Math.max(8, Math.min(px(150), vw * k - 298)); m.left = left + 'px'; m.bottom = Math.max(8, vh * k - py(1084)) + 'px';
+}
+addEventListener('resize', fit); addEventListener('orientationchange', fit); fit();
 
-<!-- KŌKUA SHOWCASE -->
-<section class="sec kokua" id="kokua">
-  <div class="container kokua-inner">
-    <div class="kokua-head">
-      <div>
-        <div class="sec-label">Our first app · Kōkua</div>
-        <h2 class="sec-title">See where your storefront <em>locks people out.</em></h2>
-      </div>
-      <p class="kokua-lead">Kōkua loads your live storefront, runs <b>axe-core</b> against WCAG 2.2 AA, and returns a prioritized, plain-English, Shopify-specific report. The issues that drive ADA demand letters — ranked by how exposed they leave you. <b>Read-only:</b> it never changes your theme.</p>
-    </div>
+// what you have done is kept on this device, so leaving loses nothing; the menu puts the bar back
+const KEY_ = 'kahakai.shore.v3';
+const save = () => { try { localStorage.setItem(KEY_, JSON.stringify(SIM.keep(s))); } catch (e) {} };
+function fresh() { const s0 = SIM.start(); try { const k = JSON.parse(localStorage.getItem(KEY_) || 'null'); if (k && Array.isArray(k.alive) && k.alive.length === 8 && SIM.done(Object.assign({}, s0, k)) < SIM.T.things) Object.assign(s0, k); } catch (e) {} return s0; }
+let s = fresh(), acc = 0, last = 0;
+let lightA = 0, lanternA = 0, lidA = s.bucket ? 1 : 0, nightA = 0, crookA = s.crooked ? 1 : 0;
+let splash = 0, ringSpin = 0, ringVel = 0, dip = 0, dipV = 0, bowlJ = 0, bowlT = 9, flash = 0, lanA = 0, lanV = 0, boardJ = 0, boardV = 0, shake = 0;
+let wallc = null, fallStage = 0, dust = [], gull = null, gullAt = 7, star = null, starAt = 9, clock = 0;
+const shell = SIM.big(s).map(b => b ? 1 : 0);
+const say = t => document.getElementById('live').textContent = t;
+let lseed = 77; const lr = () => (lseed = (lseed * 16807) % 2147483647) / 2147483647;      // the gulls and the shooting stars keep their own fixed sequence
 
-    <div class="kokua-props">
-      <div class="kprop">
-        <div class="kprop-h">Real findings, not an overlay</div>
-        <div class="kprop-p">axe-core scans the rendered page for the issues that actually drive litigation — no widget that fakes compliance and gets you sued anyway.</div>
-      </div>
-      <div class="kprop">
-        <div class="kprop-h">Prioritized, theme-level fixes</div>
-        <div class="kprop-p">Every issue is ranked by severity with the WCAG criterion and a Shopify-specific fix at the Liquid level — where it belongs.</div>
-      </div>
-      <div class="kprop">
-        <div class="kprop-h">A shareable audit trail</div>
-        <div class="kprop-p">Export the report as Markdown or JSON, track it in your scan history, and show the paper trail if anyone ever asks.</div>
-      </div>
-    </div>
+// sound: nothing exists until the speaker is tapped. Then the sea, and a sound for everything that happens.
+// All synthesized here, but built the way the real things sound: struck objects are sets of ringing partials with their
+// own decay (tin, glass, wood, plastic), soft things are shaped bursts of noise, and everything shares one small room.
+let ac = null, out = null, wet = null, nbuf = null, seaGain = null, roomGain = null, rseed = 5;
+const rr = () => (rseed = (rseed * 16807) % 2147483647) / 2147483647;          // a fixed sequence, so no two smashes are quite alike but nothing is random
+function ping(f, d, vol, when, type) { if (!ac) return; const t0 = ac.currentTime + (when || 0), o = ac.createOscillator(), a = ac.createGain(); o.type = type || 'sine'; o.frequency.value = f;
+  a.gain.setValueAtTime(0.0001, t0); a.gain.exponentialRampToValueAtTime(vol, t0 + 0.004); a.gain.exponentialRampToValueAtTime(0.0001, t0 + d); o.connect(a); a.connect(out); a.connect(wet); o.start(t0); o.stop(t0 + d + 0.02); }
+function thump(f0, f1, d, vol, when) { if (!ac) return; const t0 = ac.currentTime + (when || 0), o = ac.createOscillator(), a = ac.createGain(); o.frequency.setValueAtTime(f0, t0); o.frequency.exponentialRampToValueAtTime(f1, t0 + d);
+  a.gain.setValueAtTime(vol, t0); a.gain.exponentialRampToValueAtTime(0.0001, t0 + d); o.connect(a); a.connect(out); a.connect(wet); o.start(t0); o.stop(t0 + d + 0.02); }
+function burst(d, kind, freq, q, vol, when, sweepTo, attack) { if (!ac) return; const t0 = ac.currentTime + (when || 0), src = ac.createBufferSource(), f = ac.createBiquadFilter(), a = ac.createGain(); src.buffer = nbuf; src.loop = true;
+  f.type = kind; f.frequency.setValueAtTime(freq, t0); if (sweepTo) f.frequency.exponentialRampToValueAtTime(sweepTo, t0 + d); f.Q.value = q || 0.7;
+  a.gain.setValueAtTime(0.0001, t0); a.gain.exponentialRampToValueAtTime(vol, t0 + (attack || 0.003)); a.gain.exponentialRampToValueAtTime(0.0001, t0 + d); src.connect(f).connect(a); a.connect(out); a.connect(wet); src.start(t0, rr() * 2); src.stop(t0 + d + 0.02); }
+const struck = (partials, vol, when) => partials.forEach(([f, d, v]) => ping(f * (0.995 + 0.01 * rr()), d, vol * v, when));
+function shards(n, lo, hi, spread, vol, when) { for (let i = 0; i < n; i++) { const t = (when || 0) + spread * rr() * rr(); ping(lo + (hi - lo) * rr(), 0.03 + 0.12 * rr(), vol * (0.4 + 0.6 * rr()), t); } }
+const SND = {
+  // a rubber slipper slapping up: a dull slap and the air under it
+  throw: () => { burst(.05, 'lowpass', 1400, .7, .7); burst(.09, 'bandpass', 320, 1.2, .5, .005); thump(120, 62, .09, .55); },
+  // through the life ring: the float brushes the rope, and the ring's canvas skin thuds as it turns
+  ring: () => { burst(.22, 'bandpass', 2400, .8, .28, 0, 700, .02); thump(150, 90, .16, .3, .03); burst(.5, 'bandpass', 420, 9, .1, .08, 300, .1); },
+  // the surfboard: a hollow foam-and-glass knock
+  board: () => { burst(.03, 'bandpass', 1900, 1.5, .5); struck([[212, .22, 1], [468, .12, .45], [830, .07, .2]], .32); },
+  creak: () => { if (!ac) return; const t0 = ac.currentTime, o = ac.createOscillator(), f = ac.createBiquadFilter(), a = ac.createGain(); o.type = 'sawtooth'; o.frequency.setValueAtTime(74, t0); o.frequency.linearRampToValueAtTime(96, t0 + .18); o.frequency.linearRampToValueAtTime(70, t0 + .42);
+    f.type = 'bandpass'; f.frequency.value = 1100; f.Q.value = 5; a.gain.setValueAtTime(.0001, t0); a.gain.linearRampToValueAtTime(.16, t0 + .06); a.gain.exponentialRampToValueAtTime(.0001, t0 + .45); o.connect(f).connect(a); a.connect(out); a.connect(wet); o.start(t0); o.stop(t0 + .5); },
+  crook: () => { SND.creak(); thump(95, 48, .35, .8, .42); burst(.12, 'lowpass', 600, .7, .7, .42); struck([[190, .5, 1], [410, .3, .5]], .3, .44); burst(.3, 'bandpass', 3000, 2, .12, .5, 1200); },
+  // a small bulb: a pop of air, then thin glass
+  pop: () => { burst(.03, 'bandpass', 1500, 1, .7); thump(420, 180, .04, .3); shards(7, 3800, 9000, .22, .09, .02); burst(.2, 'highpass', 6000, .7, .1, .02); },
+  // the lantern's chimney: a tick when it cracks, a proper break when it goes, then pieces landing on the sill
+  crack: () => { ping(3150, .05, .2); ping(4720, .04, .14, .004); burst(.025, 'highpass', 5000, .7, .3); ping(2380, .25, .05, .01); },
+  smash: () => { burst(.06, 'highpass', 1800, .7, .9); shards(26, 2200, 9500, .35, .13); burst(.5, 'highpass', 4500, .7, .3, .01); shards(9, 3000, 8000, .5, .07, .45); struck([[640, .5, .5], [1480, .3, .3]], .12, .02); },
+  tink: () => { struck([[1840, .5, 1], [2910, .3, .5], [4350, .15, .3]], .07); },
+  // a tin bucket taking a glass ball: the tin rings, the ball rattles round the bottom
+  bucket: () => { burst(.02, 'highpass', 3000, .7, .5); struck([[388, .7, 1], [1012, .45, .7], [1733, .3, .5], [2660, .2, .35], [3920, .12, .2]], .14);
+    for (let i = 0; i < 5; i++) { const t = .12 + i * (.085 - i * .008); struck([[1012, .12, 1], [2660, .06, .5]], .06 * (1 - i * .15), t); } },
+  // the cooler: a thick plastic box, hollow
+  lid: () => { burst(.03, 'lowpass', 2200, .7, .5); struck([[176, .1, 1], [530, .05, .3]], .3); },
+  cooler: () => { burst(.05, 'lowpass', 900, .7, .8); thump(132, 70, .22, .8); struck([[176, .25, 1], [352, .12, .4]], .25); for (let i = 0; i < 6; i++) ping(2600 + 2400 * rr(), .05, .05, .1 + .05 * i + .03 * rr()); },   // and the ice shifts
+  // into the drink: a plunk, the glass ringing, a fizz
+  plunk: () => { thump(520, 190, .09, .5); burst(.06, 'lowpass', 2400, .7, .4); struck([[1480, .5, 1], [3260, .3, .4]], .08, .02); burst(.9, 'highpass', 6000, .5, .07, .08, 9000, .1); },
+  // the throws back: the bowl's kick, the bucket's spring, the cooler's lid
+  kick: () => { thump(90, 150, .1, .7); burst(.04, 'lowpass', 900, .7, .5); struck([[236, .12, 1], [540, .07, .4]], .3, .01); },
+  boing: () => { thump(170, 430, .2, .45); struck([[388, .3, 1], [1012, .2, .5]], .1); burst(.12, 'bandpass', 1200, 4, .12, .02, 2600, .1); },
+  fling: () => { burst(.03, 'lowpass', 2200, .7, .6); struck([[176, .1, 1], [530, .05, .3]], .3); burst(.18, 'bandpass', 700, 1.2, .25, .02, 2400, .15); },
+  rim: () => { struck([[1012, .18, 1], [1733, .1, .5]], .12); burst(.015, 'highpass', 3500, .7, .3); },
+  // a wooden bowl catching it: knock, roll, settle
+  bowl: () => { struck([[236, .14, 1], [540, .08, .4]], .35); burst(.03, 'lowpass', 1200, .7, .4); burst(.35, 'bandpass', 380, 3, .12, .05, 240, .08); struck([[236, .1, 1]], .16, .32); },
+  // the ending. The board lets go and lands in the window; the wall groans, goes over, and hits the sand
+  thud: () => { thump(120, 46, .3, 1.0); burst(.09, 'lowpass', 700, .7, .9); struck([[212, .4, 1], [468, .25, .5], [830, .12, .25]], .4, .01); shards(6, 2500, 7000, .3, .05, .05); },
+  groan: () => { if (!ac) return; const t0 = ac.currentTime, o = ac.createOscillator(), f = ac.createBiquadFilter(), a = ac.createGain(); o.type = 'sawtooth'; o.frequency.setValueAtTime(52, t0); o.frequency.linearRampToValueAtTime(74, t0 + .5); o.frequency.linearRampToValueAtTime(58, t0 + .9); o.frequency.linearRampToValueAtTime(118, t0 + 1.5);
+    f.type = 'bandpass'; f.frequency.setValueAtTime(700, t0); f.frequency.linearRampToValueAtTime(1500, t0 + 1.5); f.Q.value = 4; a.gain.setValueAtTime(.0001, t0); a.gain.linearRampToValueAtTime(.2, t0 + .25); a.gain.linearRampToValueAtTime(.28, t0 + 1.3); a.gain.exponentialRampToValueAtTime(.0001, t0 + 1.6); o.connect(f).connect(a); a.connect(out); a.connect(wet); o.start(t0); o.stop(t0 + 1.7);
+    for (const w of [.35, .72, 1.0, 1.22, 1.38]) { burst(.03, 'highpass', 2500, .7, .35, w); thump(300, 120, .05, .3, w); } burst(1.1, 'lowpass', 300, .6, .5, .5, 1400, .9); },
+  crash: () => { thump(72, 26, 1.0, 1.3); burst(.5, 'lowpass', 520, .6, 1.3); burst(1.7, 'lowpass', 2600, .5, .5, .04, 280, .02); shards(22, 1700, 7500, .7, .08, .05);
+    for (let i = 0; i < 7; i++) { const w = .08 + .5 * rr(); struck([[150 + 200 * rr(), .25, 1], [420 + 500 * rr(), .12, .4]], .22, w); } burst(2.4, 'highpass', 3200, .5, .12, .25, 6500, .7); },
+  // the life of the place
+  gull: () => { if (!ac) return; [[1900, 1150, .26, .035, 0], [1820, 1050, .3, .03, .4], [1700, 980, .36, .022, .86]].forEach(([f0, f1, d, v, w]) => { const t0 = ac.currentTime + w, o = ac.createOscillator(), a = ac.createGain(); o.type = 'triangle'; o.frequency.setValueAtTime(f0 * .8, t0); o.frequency.exponentialRampToValueAtTime(f0, t0 + .05); o.frequency.exponentialRampToValueAtTime(f1, t0 + d);
+      a.gain.setValueAtTime(.0001, t0); a.gain.exponentialRampToValueAtTime(v, t0 + .04); a.gain.exponentialRampToValueAtTime(.0001, t0 + d); o.connect(a); a.connect(out); a.connect(wet); o.start(t0); o.stop(t0 + d + .02); }); },
+  strum: () => { [392, 261.6, 329.6, 440].forEach((f, i) => struck([[f, 1.1, 1], [f * 2, .6, .32], [f * 3, .35, .12]], .11, i * .05)); burst(.02, 'bandpass', 2200, 1, .12); },
+  tok: () => { struck([[410, .07, 1], [930, .04, .5]], .3); struck([[380, .07, 1], [900, .04, .5]], .24, .16); },
+};
+function silentClip() {      // one second of silence as a WAV, made here so there is no file to fetch
+  const n = 8000, b = new Uint8Array(44 + n), v = new DataView(b.buffer), w = (o, t) => { for (let i = 0; i < t.length; i++) b[o + i] = t.charCodeAt(i); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + n, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true); w(36, 'data'); v.setUint32(40, n, true); b.fill(128, 44);
+  let str = ''; for (let i = 0; i < b.length; i++) str += String.fromCharCode(b[i]); return 'data:audio/wav;base64,' + btoa(str); }
+let keepAlive = null;
+function soundOn() {
+  try { keepAlive = keepAlive || new Audio(silentClip()); keepAlive.loop = true; keepAlive.setAttribute('playsinline', ''); const pr = keepAlive.play(); if (pr && pr.catch) pr.catch(() => {}); } catch (e) {}
+  // He asked for sound by tapping the speaker, so play it even if the iPhone's ringer switch is on silent
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+  ac = new (window.AudioContext || window.webkitAudioContext)(); if (ac.state !== 'running' && ac.resume) { const pr2 = ac.resume(); if (pr2 && pr2.catch) pr2.catch(() => {}); }
+  const lim = ac.createDynamicsCompressor(); lim.threshold.value = -10; lim.ratio.value = 10; lim.connect(ac.destination);
+  out = ac.createGain(); out.gain.value = 0.85; out.connect(lim);
+  const n = ac.sampleRate * 3; nbuf = ac.createBuffer(1, n, ac.sampleRate); const d = nbuf.getChannelData(0); let seed = 11;
+  for (let i = 0; i < n; i++) { seed = (seed * 16807) % 2147483647; d[i] = seed / 1073741823.5 - 1; }
+  // one small wooden room for everything: a short, dull tail
+  const rl = Math.floor(ac.sampleRate * 0.55), ir = ac.createBuffer(2, rl, ac.sampleRate);
+  for (let ch = 0; ch < 2; ch++) { const x = ir.getChannelData(ch); let sd = 23 + ch * 40, lp = 0; for (let i = 0; i < rl; i++) { sd = (sd * 16807) % 2147483647; const w = sd / 1073741823.5 - 1; lp += 0.35 * (w - lp); x[i] = lp * Math.pow(1 - i / rl, 2.6) * (i < 300 ? i / 300 : 1); } }
+  const conv = ac.createConvolver(); conv.buffer = ir; wet = ac.createGain(); wet.gain.value = 0.22; wet.connect(conv); conv.connect(lim);
+  // the sea outside: each wave gathers, breaks and hisses back, never quite the same length twice. It is louder once the wall is down.
+  seaGain = ac.createGain(); seaGain.gain.value = 1; seaGain.connect(lim); roomGain = wet;
+  const layer = (kind, freq, q, base, depth, rate) => { const src = ac.createBufferSource(), f = ac.createBiquadFilter(), a = ac.createGain(), l1 = ac.createOscillator(), l2 = ac.createOscillator(), g1 = ac.createGain(), g2 = ac.createGain();
+    src.buffer = nbuf; src.loop = true; f.type = kind; f.frequency.value = freq; f.Q.value = q; a.gain.value = base; l1.frequency.value = rate; l2.frequency.value = rate * 0.618; g1.gain.value = depth; g2.gain.value = depth * 0.55;
+    l1.connect(g1).connect(a.gain); l2.connect(g2).connect(a.gain); src.connect(f).connect(a).connect(seaGain); src.start(0, rr() * 2); l1.start(); l2.start(); };
+  layer('lowpass', 260, .5, .10, .055, .095);      // the weight of the water
+  layer('bandpass', 900, .5, .035, .028, .095);    // the break
+  layer('highpass', 4200, .5, .010, .008, .13);    // the hiss on the sand
+  layer('bandpass', 500, 1.5, .012, .008, .041);   // a little wind in the window
+}
+const sndBtn = document.getElementById('snd');
+sndBtn.addEventListener('click', () => { if (ac) { const old = ac; ac = null; try { old.close().catch(() => {}); } catch (e) {} try { keepAlive && keepAlive.pause(); } catch (e) {} } else soundOn();
+  sndBtn.classList.add('asked'); sndBtn.setAttribute('aria-pressed', !!ac); sndBtn.setAttribute('aria-label', ac ? 'Sound is on. Turn sound off.' : 'Sound is off. Turn sound on.'); document.getElementById('sx').style.display = ac ? 'none' : ''; });
 
-    <div class="frame reveal reveal-2">
-      <div class="frame-bar">
-        <div class="frame-dots"><i></i><i></i><i></i></div>
-        <div class="frame-url">kōkua · scan of <b>northfield-supply.myshopify.com</b></div>
-        <div class="frame-pill">Read-only</div>
-      </div>
-      <div class="frame-body">
-        <div class="scanline"></div>
-        <div class="report-top">
-          <div class="report-h">Accessibility scan<span>WCAG 2.2 AA · axe-core · 1 page</span></div>
-          <div class="report-stamp">19 issue types<br>42 total instances</div>
-        </div>
-        <div class="sev-tiles">
-          <div class="sev c"><div class="sev-n">3</div><div class="sev-l">Critical</div></div>
-          <div class="sev s"><div class="sev-n">7</div><div class="sev-l">Serious</div></div>
-          <div class="sev m"><div class="sev-n">5</div><div class="sev-l">Moderate</div></div>
-          <div class="sev n"><div class="sev-n">4</div><div class="sev-l">Minor</div></div>
-        </div>
-        <div class="issues">
-          <div class="issue">
-            <div class="chip c">Critical</div>
-            <div>
-              <div class="issue-id">color-contrast <em>WCAG 1.4.3</em></div>
-              <div class="issue-desc"><b>Fix:</b> Adjust theme color settings so text meets 4.5:1 (3:1 for large text). Watch buttons, sale badges, and text over hero images.</div>
-            </div>
-            <div class="issue-count">14 instances</div>
-          </div>
-          <div class="issue">
-            <div class="chip s">Serious</div>
-            <div>
-              <div class="issue-id">image-alt <em>WCAG 1.1.1</em></div>
-              <div class="issue-desc"><b>Fix:</b> Add descriptive alt text to product and section images (theme editor, or image_tag with alt in Liquid). Decorative images use alt="".</div>
-            </div>
-            <div class="issue-count">22 instances</div>
-          </div>
-          <div class="issue">
-            <div class="chip s">Serious</div>
-            <div>
-              <div class="issue-id">link-name <em>WCAG 2.4.4</em></div>
-              <div class="issue-desc"><b>Fix:</b> Give icon-only and repeated "Shop" links a discernible name — visible text or aria-label in the section snippet.</div>
-            </div>
-            <div class="issue-count">9 instances</div>
-          </div>
-          <div class="issue">
-            <div class="chip m">Moderate</div>
-            <div>
-              <div class="issue-id">label <em>WCAG 4.1.2</em></div>
-              <div class="issue-desc"><b>Fix:</b> Associate a real &lt;label&gt; with each form field (search, newsletter, contact). A placeholder is not a label.</div>
-            </div>
-            <div class="issue-count">3 instances</div>
-          </div>
-        </div>
-        <div class="report-note"><b>Automated scan (axe-core)</b> — catches roughly 30–50% of WCAG issues. Not a compliance certification; keyboard + screen-reader review is still required.</div>
-      </div>
-    </div>
 
-    <div class="kokua-cta">
-      <a href="https://kokua.kahak.ai" class="btn-primary">Scan your store free →</a>
-      <span class="note">Installs from the Shopify App Store · read-only · no overlay</span>
-    </div>
-  </div>
-</section>
+function press(side, down) { SIM.press(s, side, down); if (down && ac && ac.state !== 'running' && ac.resume) ac.resume(); }
+const held = new Map();
+const flipNow = side => s.ball.live && s.ball.z < 1.3 && Math.sign(s.ball.x) === (side === 'L' ? -1 : 1);
+// Things about the bar that answer a tap. The ukulele and the radio are on the wall beside the window, where wide screens can see them.
+const EGGS = [{ x0: 965, x1: 1075, y0: 365, y1: 695, wall: true, go: () => SND.strum() }, { x0: 1122, x1: 1262, y0: 380, y1: 478, wall: true, go: () => sndBtn.click() }, { x0: -325, x1: -228, y0: 1070, y1: 1180, go: () => SND.tok() }];
+let swallowed = false;
+addEventListener('click', e => { if (swallowed && e.target.closest('#drink, #bottle')) { e.stopImmediatePropagation(); e.preventDefault(); } swallowed = false; }, true);
+addEventListener('pointerdown', e => { const prop = e.target.closest('#drink, #bottle'); swallowed = !!prop && flipNow(prop.id === 'drink' ? 'L' : 'R');
+  if (!e.target.closest('#menu, #drink') && menu.style.display === 'block') showMenu(false);
+  if (e.target.closest('button, a, #menu, #note') && !swallowed) return;
+  const r = stage.getBoundingClientRect(), ox = (e.clientX - r.left) / view.k + view.x - OX, oy = (e.clientY - r.top) / view.k + view.y - OY;
+  const egg = EGGS.find(q => ox > q.x0 && ox < q.x1 && oy > q.y0 && oy < q.y1 && !(q.wall && s.phase !== 'play')); if (egg) { egg.go(); e.preventDefault(); return; }
+  if (e.isPrimary && e.pointerType === 'touch') letGo(); const side = e.clientX < r.left + r.width / 2 ? 'L' : 'R'; held.set(e.pointerId, side); press(side, true); e.preventDefault(); }, { passive: false });
+const up = e => { const side = held.get(e.pointerId); if (!side) return; held.delete(e.pointerId); if (![...held.values()].includes(side)) press(side, false); };
+addEventListener('pointerup', up); addEventListener('pointercancel', up);
+// a slipper must never stay up because a finger's lift was missed (a system gesture, a second finger, leaving the page)
+const letGo = () => { held.clear(); press('L', false); press('R', false); };
+addEventListener('touchend', e => { if (e.touches.length === 0) letGo(); }, { passive: true }); addEventListener('touchcancel', letGo, { passive: true });
+addEventListener('blur', letGo); document.addEventListener('visibilitychange', () => { if (document.hidden) letGo(); });
+const KEY = { ArrowLeft: 'L', f: 'L', F: 'L', a: 'L', A: 'L', ArrowRight: 'R', j: 'R', J: 'R', l: 'R', L: 'R' };
+let typed = '';
+addEventListener('keydown', e => { if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key.length === 1) { typed = (typed + e.key.toLowerCase()).slice(-5); if (typed === 'aloha') { note.style.display = 'block'; SND.tink(); } }      // say aloha and the bottle gives up its note
+  if (KEY[e.key] && !e.repeat && !e.target.closest('button, a')) { press(KEY[e.key], true); e.preventDefault(); } if (e.key === 'Escape') showMenu(false); });
+addEventListener('keyup', e => { if (KEY[e.key]) press(KEY[e.key], false); });
+addEventListener('contextmenu', e => e.preventDefault());
+// iPhone: a held thumb must not bring up the magnifying glass, a text selection, or a zoom
+for (const ev of ['touchstart', 'touchmove']) document.addEventListener(ev, e => { if (!e.target.closest('button, a, #menu, #note')) e.preventDefault(); }, { passive: false });
+for (const ev of ['gesturestart', 'gesturechange', 'dblclick']) document.addEventListener(ev, e => e.preventDefault(), { passive: false });
+const note = document.getElementById('note'), plainNote = '<a href="mailto:aloha@kahak.ai">aloha@kahak.ai</a>';
+function again() { try { localStorage.removeItem(KEY_); } catch (e) {} s = SIM.start(); shell.fill(0); crookA = 0; lidA = 0; nightA = 0; lightA = 0; lanternA = 0; wallc = null; fallStage = 0; dust = []; shake = 0; note.innerHTML = plainNote; note.style.display = 'none'; showMenu(false); say('The bar is back as it was.'); }
+document.getElementById('again').addEventListener('click', again);
+document.getElementById('bottle').addEventListener('click', () => { note.style.display = note.style.display === 'block' ? 'none' : 'block'; if (note.style.display === 'block') SND.tink(); });
+// the drink is the menu: a bar's own menu card, with everything a site menu needs on it
+const menu = document.getElementById('menu'), drinkBtn = document.getElementById('drink');
+const showMenu = on => { menu.style.display = on ? 'block' : 'none'; drinkBtn.setAttribute('aria-expanded', on); document.getElementById('m-sound-v').textContent = ac ? 'on' : 'off'; if (on) SND.tink(); };
+drinkBtn.addEventListener('click', () => showMenu(menu.style.display !== 'block'));
+document.getElementById('m-sound').addEventListener('click', () => { sndBtn.click(); document.getElementById('m-sound-v').textContent = ac ? 'on' : 'off'; });
 
-<!-- PROBLEM -->
-<section class="sec" id="work">
-  <div class="container">
-    <div class="problem-grid">
-      <div>
-        <div class="sec-label">The other half · done by hand</div>
-        <h2 class="problem-title">Premium themes end where <em>your store begins.</em></h2>
-      </div>
-      <div class="problem-body">
-        <p>A premium Shopify theme is a strong starting point. Your theme maker ships a capable, well-supported product. But the moment you customize it (and you will, because every real store needs real customization), you hit the edge of what support covers.</p>
-        <p>Every premium theme studio draws the line in the same place: <strong>"sorry, that's outside support."</strong> TaskHusky and Storetasker fill that gap for generic themes. Nobody fills it for the ones you bought.</p>
-        <p>That's the desk kahakai sits at — the same hands that build our apps.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- THEMES -->
-<section class="sec" id="themes">
-  <div class="container">
-    <div class="themes-head">
-      <h2 class="sec-title" style="max-width:none">Themes we've <em>been inside.</em></h2>
-      <div class="themes-count"><strong>03</strong> studios<br><strong>12+</strong> themes<br><strong>11 yrs</strong> in the craft</div>
-    </div>
-    <div class="themes-groups">
-      <div class="theme-group">
-        <div class="theme-group-studio">Maestrooo</div>
-        <div class="theme-group-tenure">2022 — present</div>
-        <div class="theme-names">Prestige<br>Focal<br>Impact<br>Warehouse</div>
-      </div>
-      <div class="theme-group">
-        <div class="theme-group-studio">Archetype</div>
-        <div class="theme-group-tenure">2017 — 2022</div>
-        <div class="theme-names">Impulse<br>Motion<br>Expanse<br>Streamline</div>
-      </div>
-      <div class="theme-group">
-        <div class="theme-group-studio">Out of the Sandbox</div>
-        <div class="theme-group-tenure">2014 — 2017</div>
-        <div class="theme-names">Turbo<br>Flex<br>Retina<br>Canopy</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CASE -->
-<section class="sec" id="case-study">
-  <div class="container">
-    <div class="sec-label">Work, documented</div>
-    <h2 class="sec-title">A recent rebuild, <em>start to finish.</em></h2>
-    <article class="case-card">
-      <div class="case-meta">
-        <span>Theme: Prestige (Maestrooo)</span>
-        <span>Catalog: 11,000+ SKUs</span>
-        <span>Category: DTC apparel</span>
-        <span>Engagement: Rescue + Rebuild</span>
-      </div>
-      <h3 class="case-headline">Three years of patchwork, <em>rebuilt in four weeks.</em></h3>
-      <p class="case-body">The store had accumulated customizations from four different developers over three years. Cart drawer broken on mobile. Filter section hardcoded against a deprecated metafield. Theme updates blocked because every update undid a different custom section. We pulled the theme into a dev environment, audited every customization against the current theme version, rebuilt the sections that mattered using Prestige's native schema, and migrated what was worth keeping to theme app extensions so the next update doesn't break anything.</p>
-      <div class="case-results">
-        <div><div class="case-result-label">Load time</div><div class="case-result-value">4.2s → 1.8s</div></div>
-        <div><div class="case-result-label">Time in backend</div><div class="case-result-value">12hr/week → 2hr/week</div></div>
-        <div><div class="case-result-label">Theme updates</div><div class="case-result-value">blocked → current</div></div>
-      </div>
-      <div class="case-footer">Anonymized at client's request · details available on request</div>
-    </article>
-  </div>
-</section>
-
-<!-- PROCESS -->
-<section class="sec" id="process">
-  <div class="container">
-    <div class="sec-label">How it works</div>
-    <h2 class="sec-title">Four steps. <em>No surprises.</em></h2>
-    <div class="rowlist">
-      <div class="row">
-        <div class="row-num">01</div>
-        <div class="row-name"><em>Book a call</em></div>
-        <div class="row-desc">30 minutes, no slides. You describe what's broken or what you want built. We confirm if we're the right fit.</div>
-        <div class="row-meta">30 min</div>
-      </div>
-      <div class="row">
-        <div class="row-num">02</div>
-        <div class="row-name"><em>Scope and quote</em></div>
-        <div class="row-desc">Within 2 business days we send a fixed-price quote with a defined outcome and a turnaround window. No retainers to unlock a quote.</div>
-        <div class="row-meta">2 business days</div>
-      </div>
-      <div class="row">
-        <div class="row-num">03</div>
-        <div class="row-name"><em>Build and verify</em></div>
-        <div class="row-desc">We do the work on a development theme first. You review before anything goes live. Every change is documented.</div>
-        <div class="row-meta">1–4 weeks (varies by scope)</div>
-      </div>
-      <div class="row">
-        <div class="row-num">04</div>
-        <div class="row-name"><em>Handover</em></div>
-        <div class="row-desc">You get the completed work, a plain-English change log, and a 14-day post-launch window for any follow-up issues at no cost.</div>
-        <div class="row-meta">14 days included</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PULL QUOTE -->
-<section class="pullquote">
-  <div class="container">
-    <p class="pullquote-line">When your theme maker says <em>"sorry, that's outside support,"</em> that's our line.</p>
-    <div class="pullquote-foot">
-      <span>The premium theme specialist's edge</span>
-      <span>kahakai</span>
-    </div>
-  </div>
-</section>
-
-<!-- SERVICES -->
-<section class="sec" id="services">
-  <div class="container">
-    <div class="sec-label">What we do by hand</div>
-    <h2 class="sec-title">Four ways we work with <em>premium theme customers.</em></h2>
-    <div class="rowlist">
-      <div class="row">
-        <div class="row-num">01</div>
-        <div class="row-name"><em>Fix</em></div>
-        <div class="row-desc">Something broke after a customization. An app conflict. An update that undid your edits. We diagnose it and fix it.</div>
-        <div class="row-kind"><strong>$750</strong>One-off</div>
-      </div>
-      <div class="row">
-        <div class="row-num">02</div>
-        <div class="row-name"><em>Customize</em></div>
-        <div class="row-desc">The thing the theme doesn't do natively. Built to survive theme updates and documented so you know what changed.</div>
-        <div class="row-kind"><strong>$3,000</strong>Project</div>
-      </div>
-      <div class="row">
-        <div class="row-num">03</div>
-        <div class="row-name"><em>Rebuild</em></div>
-        <div class="row-desc">The store has accumulated tweaks over years and nothing works right anymore. We take it apart and put it back better.</div>
-        <div class="row-kind"><strong>$12,000</strong>Project</div>
-      </div>
-      <div class="row">
-        <div class="row-num">04</div>
-        <div class="row-name"><em>Retainer</em></div>
-        <div class="row-desc">A specialist on call for ongoing work. Theme updates, seasonal changes, new sections, small asks. Hours flex to the month.</div>
-        <div class="row-kind"><strong>$5,000</strong>Monthly</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- MEET -->
-<section class="sec" id="meet">
-  <div class="container">
-    <div class="meet-grid">
-      <div class="meet-photo" role="img" aria-label="Jamey Warren, founder of kahakai"></div>
-      <div class="meet-content">
-        <div class="sec-label">Who runs this</div>
-        <h2 class="meet-title">I've been on the other end of <em>thousands of theme support tickets.</em></h2>
-        <div class="meet-body">
-          <p>I've worked inside three of the studios that made the premium Shopify theme market. Out of the Sandbox first, then Archetype, now Maestrooo. Eleven years of shipping themes, answering tickets, and watching merchants hit the same wall over and over.</p>
-          <p>kahakai is what I'd want if I were the merchant: someone who knows the theme cold, respects its architecture, and fixes what's broken. <strong>Kōkua</strong> is the same instinct, productized — the accessibility check I kept running by hand, now a scan any merchant can run themselves.</p>
-          <p>When a project calls for something outside my core, I bring in collaborators who are better at their specific thing than I am.</p>
-        </div>
-        <div class="ledger">
-          <div class="ledger-head"><span>Founder · résumé</span><span class="copper">Verified</span></div>
-          <div class="ledger-row"><div class="ledger-years">2022 — now</div><div class="ledger-studio">Maestrooo</div><div class="ledger-role">Theme support &amp; customization</div></div>
-          <div class="ledger-row"><div class="ledger-years">2017 — 2022</div><div class="ledger-studio">Archetype</div><div class="ledger-role">Theme development</div></div>
-          <div class="ledger-row"><div class="ledger-years">2014 — 2017</div><div class="ledger-studio">Out of the Sandbox</div><div class="ledger-role">Theme development</div></div>
-          <div class="ledger-foot"><span>11 years</span><span>3 studios</span><span>1 specialist</span></div>
-        </div>
-        <p class="meet-cta">If that sounds like the kind of work you need, the <em><a href="https://cal.com/kahakai/30min">call</a></em> is 30 minutes.</p>
-        <div class="meet-sig"><span>— Jamey</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CLOSER -->
-<section class="closer" id="book">
-  <div class="container">
-    <h2 class="closer-line">Ready to <em>hand it off?</em></h2>
-    <p class="closer-sub">Scan your store free with Kōkua, or book 30 minutes for the work that needs hands. We'll tell you if we're the right fit.</p>
-    <div class="closer-ctas">
-      <a href="https://kokua.kahak.ai" class="btn-primary">Try Kōkua — free scan</a>
-      <span class="closer-email">
-        <a href="https://cal.com/kahakai/30min" class="btn-ghost">or book a call</a>
-        <span class="email-promise">hello@kahak.ai · replies within 1 business day</span>
-      </span>
-    </div>
-  </div>
-</section>
-
-<!-- FOOT -->
-<footer>
-  <div class="container foot">
-    <div class="foot-wm">kahakai</div>
-    <div class="foot-links">
-      <a href="https://kokua.kahak.ai">Kōkua</a>
-      <a href="#work">Theme work</a>
-      <a href="#book">Book a call</a>
-      <a href="mailto:hello@kahak.ai">hello@kahak.ai</a>
-    </div>
-    <span>kahak.ai · Livingston, MT · © 2026</span>
-  </div>
-</footer>
-
+// ------------------------------------------------------------------ drawing
+const plate = (im, a) => { if (a <= 0.004) return; g.globalAlpha = Math.min(1, a); g.drawImage(im, -OX, -OY); g.globalAlpha = 1; };
+const blend = (a, b, k, x, y) => { if (k < 0.995) { g.globalAlpha = 1; g.drawImage(a, x, y); } if (k > 0.005 && b && b.complete && b.naturalWidth) { g.globalAlpha = k; g.drawImage(b, x, y); } g.globalAlpha = 1; };
+const smooth = u => { u = Math.max(0, Math.min(1, u)); return u * u * (3 - 2 * u); };
+function slipper(a, b, kE, box, boxE, side) {
+  const p = SIM.T.piv[side], ang = s.fl[side].a - SIM.T.rest, x0 = X(p[0]), y0 = Y(p[1]);
+  g.save(); g.translate(x0, y0); g.rotate(side === 'L' ? -ang : ang); if (kE < 0.995) g.drawImage(a, box.x - x0, box.y - y0); if (kE > 0.005) { g.globalAlpha = kE; g.drawImage(b, boxE.x - x0, boxE.y - y0); } g.restore(); g.globalAlpha = 1;
+}
+function swingDraw(c, image, box, hx, hy, ang, alpha) { c.save(); c.globalAlpha = alpha; c.translate(hx, hy); c.rotate(ang); c.drawImage(image, box.x - hx, box.y - hy); c.restore(); c.globalAlpha = 1; }
+// The ending, in seconds from the last thing done: the board lets go at b0 and lands in the window at b1; the wall starts over at w0
+// and is flat on the sand at w1; the dust has cleared by f1.
+const FALL = { b0: 0.3, b1: 1.05, w0: 1.6, w1: 3.15, f1: 4.1, note: 7 };
+const BHX = X(-0.5525), BHY = Y(2.82);
+function boardPose(E) {     // where the surfboard is once it has let go: it drops out of its last rack and lands on the bucket and the cooler, across the window
+  const p = Math.max(0, Math.min(1, (E - FALL.b0) / (FALL.b1 - FALL.b0))), e = p * p; let dy = 486 * e; const a = 0.21 * (1 - e) + 0.03 * e;
+  if (E > FALL.b1) { const u = E - FALL.b1; dy -= 22 * Math.exp(-7 * u) * Math.abs(Math.sin(u * 17)); }
+  return { dy, a };
+}
+function drawBoard(c, dy, a, litA, F) { const b = SPR.board0; c.save(); c.translate(0, dy); swingDraw(c, img.board0, b, BHX, BHY, a, 1); if (litA > 0.01) { c.filter = 'none'; swingDraw(c, img.board3, b, BHX, BHY, a, litA); c.filter = F; } c.restore(); }
+const WIN = [86, Y(2.30), 612, Y(1.118) - Y(2.30)];      // the window's opening
+function seaLife(t, x0, x1, alpha) {      // the sea is never still: light catches on it
+  if (still) return;
+  for (let i = 0; i < 34; i++) { const x = x0 + ((i * 97.3) % (x1 - x0)), y = 672 + ((i * 53.7) % 76), ph = t / (520 + (i % 7) * 90) + i * 1.7, k = Math.pow(Math.max(0, Math.sin(ph)), 5);
+    if (k < 0.03 || (x > 20 && x < 222 && x1 > 800)) continue; g.fillStyle = nightA > 0.5 ? `rgba(120,240,220,${0.5 * k * alpha})` : `rgba(255,236,196,${0.6 * k * alpha})`; g.beginPath(); g.ellipse(x, y, 3 + 5 * (y - 660) / 90, 1.1, 0, 0, 7); g.fill(); }
+}
+function draw(t) {
+  const T = SIM.T, q = view.q, E = s.phase === 'fall' ? s.endT : -1, sh = still ? 0 : shake;
+  g.setTransform(q, 0, 0, q, (OX - view.x + sh * Math.sin(t * 0.093)) * q, (OY - view.y + sh * Math.cos(t * 0.117)) * q);
+  const FS = T.ballR / 0.079, float = (x, y) => g.drawImage(img.fl, x - SPR.fl.w * FS / 2, y - SPR.fl.h * FS / 2, SPR.fl.w * FS, SPR.fl.h * FS);      // the float was rendered at 0.079 m
+  const shown = s.ball.live || (s.hold && s.hold.kind === 'bowl');
+  const ready = endReady && E >= FALL.w0, kEnd = !endReady ? 0 : still ? smooth(E / 1.4) : smooth((E - FALL.w1) / (FALL.f1 - FALL.w1));
+  const kLight = ready ? (still ? kEnd : smooth((E - FALL.w0) / (FALL.w1 - FALL.w0))) : 0;      // how far the daylight has come in over the bar
+  if (kEnd >= 0.999) {
+    // ---- it is over: the bar stands open on the beach, the wreck on the sand, the stars out
+    g.drawImage(img.end, -OX, -OY);
+    seaLife(t, -OX, MW - OX, 0.8);
+    if (!still) { for (let i = 0; i < 80; i++) { const x = -OX + ((i * 311.7) % MW), y = -OY + ((i * 173.3) % 420), k = 0.35 + 0.65 * Math.abs(Math.sin(t / (900 + (i % 9) * 260) + i)); g.fillStyle = `rgba(255,246,228,${(0.2 + 0.5 * ((i * 7) % 5) / 5) * k * (1 - (y + OY) / 520)})`; g.beginPath(); g.arc(x, y, 0.9 + ((i * 3) % 3) * 0.45, 0, 7); g.fill(); }
+      if (star) { const u = star.t / 0.9; g.strokeStyle = `rgba(255,250,235,${0.8 * Math.sin(Math.PI * Math.min(1, u))})`; g.lineWidth = 1.6; g.beginPath(); g.moveTo(star.x + star.dx * u, star.y + star.dy * u); g.lineTo(star.x + star.dx * (u - 0.22), star.y + star.dy * (u - 0.22)); g.stroke(); } }
+  } else if (ready && !still) {
+    // ---- the wall is going over: the open beach behind it, the wall as it falls (drawn in thin strips, each where it would truly be seen), the bar in front
+    if (!wallc) { wallc = document.createElement('canvas'); wallc.width = MW; wallc.height = MH; const c = wallc.getContext('2d'); c.drawImage(img.wall, 0, 0); c.translate(OX, OY);
+      c.drawImage(img.ring, SPR.ring.x, SPR.ring.y); c.drawImage(img.lanx, SPR.lanx.x, SPR.lanx.y); c.drawImage(img.lid1, SPR.lid1.x, SPR.lid1.y); c.drawImage(img.bucket, SPR.bucket.x, SPR.bucket.y); const bp = boardPose(99); drawBoard(c, bp.dy, bp.a, 0, 'none'); }
+    g.drawImage(img.open, -OX, -OY);
+    const u = Math.pow(Math.max(0, Math.min(1, (E - FALL.w0) / (FALL.w1 - FALL.w0))), 2.3), th = u * Math.PI / 2 * 1.006, sn = Math.sin(th), cs = Math.cos(th), R0 = OY + H / 2 + CZ * PPM, N = 110;
+    const proj = r => { const z = (R0 - r) / PPM, yy = 0.25 * u + z * sn, zz = 0.45 * u + z * cs, k = 3.4 / (3.4 + yy); return [Y(1.62 + (zz - 1.62) * k), k]; };
+    g.globalAlpha = 1 - kEnd;
+    for (let i = 0; i < N; i++) { const r0 = R0 * i / N, r1 = R0 * (i + 1) / N, a = proj(r0), b = proj(r1), k = (a[1] + b[1]) / 2, hgt = b[0] - a[0]; if (hgt < 0.25) continue; g.drawImage(wallc, 0, r0, MW, r1 - r0, W / 2 - (OX + W / 2) * k, a[0], MW * k, hgt + 0.7); }
+    g.globalAlpha = 1; g.drawImage(img.fore_e, SPR.fore_e.x, SPR.fore_e.y); g.globalAlpha = 1 - kLight; g.drawImage(img.fore_n, SPR.fore_n.x, SPR.fore_n.y); g.globalAlpha = 1;
+    plate(img.end, kEnd);
+  } else {
+    // ---- the bar: the dark picture, the lantern's light, the bulbs' light by how many still burn, and night
+    const lo = lanternA > 0.5 ? 2 : 0;
+    g.drawImage(img['m' + lo], -OX, -OY);
+    const cross = lanternA > 0.5 ? 1 - lanternA : lanternA; plate(img['m' + (lo ? 0 : 2)], cross * 2); plate(img['m' + (lo + 1)], lightA); plate(img.mn, nightA);
+    // outside the window: light on the water, now and then a gull, and a sail going by on the horizon
+    g.save(); g.beginPath(); g.rect(WIN[0], WIN[1], WIN[2], WIN[3]); g.clip();
+    seaLife(t, 226, 696, 1);
+    if (!still) { const bx = 720 - ((t / 1000 * 2.6) % 1500), dk = `rgba(46,32,28,${0.7 - 0.4 * nightA})`; g.fillStyle = dk; g.beginPath(); g.moveTo(bx - 8, 665); g.lineTo(bx + 9, 665); g.lineTo(bx + 6, 668.5); g.lineTo(bx - 6, 668.5); g.fill(); g.beginPath(); g.moveTo(bx + 1, 663.5); g.lineTo(bx + 1, 650); g.lineTo(bx - 7, 663.5); g.fill();
+      if (gull) { const u = gull.t / gull.d, x = gull.dir > 0 ? 60 + 680 * u : 740 - 680 * u, y = gull.y + 14 * Math.sin(u * 5) - 30 * u, f = Math.sin(gull.t * 8.5), wgl = 10 + 2 * gull.sz; g.strokeStyle = `rgba(40,28,24,${0.8 - 0.3 * nightA})`; g.lineWidth = 1.7; g.lineCap = 'round'; g.beginPath(); g.moveTo(x - wgl, y - 5 * f - 1); g.quadraticCurveTo(x - wgl * 0.45, y - 3 - 2 * f, x, y); g.quadraticCurveTo(x + wgl * 0.45, y - 3 - 2 * f, x + wgl, y - 5 * f - 1); g.stroke(); } }
+    g.restore();
+    if (flash > 0) { g.fillStyle = `rgba(255,190,120,${0.10 * flash})`; g.fillRect(-OX, -OY, MW, 330 + OY); }
+    const bright = Math.max(0.5, Math.min(1, 0.58 + 0.42 * Math.max(lightA, lanternA * 0.8)) * (1 - 0.35 * nightA)), F = `brightness(${bright.toFixed(2)})`, falling = E >= 0;
+    g.filter = F;
+    // the surfboard: lit by the bulbs, shaken by a knock, hanging from its left rack once it has dropped
+    if (!falling) drawBoard(g, 0, crookA * 0.21 + boardJ * (0.010 + 0.012 * Math.min(2, s.knocks)), lightA * (1 - nightA), F);
+    g.filter = 'none';
+    for (let i = 0; i < 8; i++) { if (!s.alive[i]) continue; const q1 = T.bulbs[i], x = X(q1[0]), y = Y(q1[1]);
+      if (s.lights) { const r = g.createRadialGradient(x, y, 0, x, y, 30); r.addColorStop(0, 'rgba(255,240,205,1)'); r.addColorStop(0.22, 'rgba(255,205,130,.85)'); r.addColorStop(1, 'rgba(255,180,90,0)'); g.fillStyle = r; g.beginPath(); g.arc(x, y, 30, 0, 7); g.fill(); }
+      else { g.fillStyle = 'rgba(190,175,150,.55)'; g.beginPath(); g.arc(x, y, 7.5, 0, 7); g.fill(); } }
+    g.filter = F;
+    // the life ring: it spins when the float goes through, and swings once the cooler has been filled
+    { const r = SPR.ring, cx = r.x + r.w / 2, cy = r.y + r.h / 2, hy = Y(2.27), dx = (SIM.ringX(s) - T.ring.x) * PPM, ang = -Math.asin(Math.max(-1, Math.min(1, dx / (cy - hy))));
+      g.save(); g.translate(cx, hy); g.rotate(ang); g.translate(0, cy - hy); g.rotate(ringSpin); g.drawImage(img.ring, -r.w / 2, -r.h / 2); g.restore(); }
+    { const b = SPR.lan0, hx = b.x + b.w / 2, hy = b.y + 4; g.filter = 'none'; swingDraw(g, s.smashed ? img.lanx : (s.bucket ? img.lan3 : img.lan0), b, hx, hy, lanA, 1);
+      if (!s.smashed && s.lanHits > 0) { g.save(); g.translate(hx, hy); g.rotate(lanA); g.strokeStyle = 'rgba(255,255,255,.85)'; g.lineWidth = 1.6; g.beginPath(); const cx = 0, cy = b.h * 0.56;
+        g.moveTo(cx - 9, cy - 16); g.lineTo(cx - 2, cy - 4); g.lineTo(cx - 8, cy + 6); g.lineTo(cx + 1, cy + 17); if (s.lanHits > 1) { g.moveTo(cx - 2, cy - 4); g.lineTo(cx + 9, cy - 9); g.moveTo(cx + 11, cy - 18); g.lineTo(cx + 5, cy + 2); g.lineTo(cx + 12, cy + 12); g.moveTo(cx + 5, cy + 2); g.lineTo(cx - 3, cy + 9); } g.stroke(); g.restore(); }
+      g.filter = F; }
+    // the cooler's lid: shut, thrown open for good, and clapped shut for a moment on a float that lands in it
+    if (lidA < 0.99) { g.globalAlpha = 1 - lidA; g.drawImage(img.lid0, SPR.lid0.x, SPR.lid0.y); g.globalAlpha = 1; }
+    if (lidA > 0.01) { g.globalAlpha = lidA; g.drawImage(img.lid1, SPR.lid1.x, SPR.lid1.y); g.globalAlpha = 1; }
+    if (s.hold && s.hold.kind === 'bucket') float(X(s.ball.x), Y(s.ball.z));      // caught: it sits in the bucket's mouth until the spring throws it out
+    { const b = SPR.bucket; g.drawImage(img.bucket, b.x, b.y + dip * PPM); }
+    if (falling) { const bp = boardPose(E); drawBoard(g, bp.dy, bp.a, 0, F); }      // the board on its way down, in front of everything in the window
+    g.filter = 'none';
+    // five shells on the sill: the ring, the bucket, the cooler, the lantern, the surfboard
+    if (still) plate(img.end, kEnd);      // with motion turned down the wall does not fall: the bar fades to the open beach
+    else for (let i = 0; i < 5; i++) if (shell[i] > 0.01) { const x = X((-0.20 + 0.10 * i) * 1.0625), y = Y(1.118), r = g.createRadialGradient(x, y, 0, x, y, 26); r.addColorStop(0, `rgba(210,112,74,${0.95 * shell[i]})`); r.addColorStop(1, 'rgba(210,112,74,0)'); g.fillStyle = r; g.beginPath(); g.arc(x, y, 26, 0, 7); g.fill(); }
+  }
+  // on the bar, in every scene: the bowl that kicks, the slippers, the float
+  const kE = kEnd >= 0.999 ? 1 : kLight, bright2 = kEnd > 0 || ready ? 1 : Math.max(0.5, Math.min(1, 0.58 + 0.42 * Math.max(lightA, lanternA * 0.8)) * (1 - 0.35 * nightA));
+  g.filter = bright2 < 0.995 ? `brightness(${bright2.toFixed(2)})` : 'none';
+  blend(img.bowl, img.bowl_e, kE, SPR.bowl.x, SPR.bowl.y + bowlJ);
+  slipper(img.sl, img.sl_e, kE, SPR.sl, SPR.sl_e || SPR.sl, 'L'); slipper(img.sr, img.sr_e, kE, SPR.sr, SPR.sr_e || SPR.sr, 'R');
+  g.filter = 'none';
+  if (shown) { const bx = X(s.ball.x), by = Y(s.ball.z) + (s.hold ? bowlJ : 0), glow = Math.max(nightA, kE);
+    if (glow > 0.3) { const r = g.createRadialGradient(bx, by, 0, bx, by, 70); r.addColorStop(0, `rgba(90,230,210,${0.45 * glow})`); r.addColorStop(1, 'rgba(90,230,210,0)'); g.fillStyle = r; g.beginPath(); g.arc(bx, by, 70, 0, 7); g.fill(); }
+    float(bx, by); }
+  if (splash > 0.01) { const x = 189, y = 1138; for (let i = 0; i < 3; i++) { const k = Math.min(1, (1 - splash) * 1.6 + i * 0.18); if (k > 1) continue; g.strokeStyle = `rgba(255,205,150,${0.7 * (1 - k)})`; g.lineWidth = 2.5; g.beginPath(); g.ellipse(x, y - 30 * k, 16 + 34 * k, 6 + 10 * k, 0, 0, 7); g.stroke(); }
+    for (let i = 0; i < 7; i++) { const a = -Math.PI / 2 + (i - 3) * 0.33, d = 70 * (1 - splash); g.fillStyle = `rgba(255,190,120,${splash})`; g.beginPath(); g.arc(x + Math.cos(a) * d, y + Math.sin(a) * d + 60 * (1 - splash) * (1 - splash), 3.5, 0, 7); g.fill(); } }
+  // dust, where things land
+  for (const d of dust) { const k = d.t / d.life, a = d.a * Math.sin(Math.PI * Math.min(1, k * 1.15)) * (1 - k * 0.3); if (a <= 0.005) continue; const r = d.r * (0.45 + 1.2 * k), gr = g.createRadialGradient(d.x, d.y, 0, d.x, d.y, r); gr.addColorStop(0, `rgba(196,174,146,${a})`); gr.addColorStop(1, 'rgba(196,174,146,0)'); g.fillStyle = gr; g.beginPath(); g.arc(d.x, d.y, r, 0, 7); g.fill(); }
+  // the one hint: a soft ring where the next thumb goes
+  if (!still && (E < 0 || kEnd >= 0.999)) { const side = s.ball.live && Math.abs(s.ball.z - 0.95) < 0.25 ? Math.sign(s.ball.x) : 0;
+    if (side) { const k = 0.5 + 0.5 * Math.sin(t / 380); g.strokeStyle = `rgba(104,188,174,${0.2 + 0.3 * k})`; g.lineWidth = 3; g.beginPath(); g.arc(W / 2 + side * 255, 1105, 24 + 6 * k, 0, 7); g.stroke(); } }
+  // where the picture ends short of the screen's edge, it fades into the dark rather than stopping
+  g.setTransform(1, 0, 0, 1, 0, 0); const cw = cv.width, chh = cv.height, edge = (x0, y0, x1, y1) => { const gr = g.createLinearGradient(x0, y0, x1, y1); gr.addColorStop(0, 'rgba(13,10,7,1)'); gr.addColorStop(1, 'rgba(13,10,7,0)'); g.fillStyle = gr; g.fillRect(Math.min(x0, x1), Math.min(y0, y1), Math.abs(x1 - x0) || cw, Math.abs(y1 - y0) || chh); };
+  if (innerWidth - view.w * view.k > 3) { edge(0, 0, cw * 0.07, 0); edge(cw, 0, cw * 0.93, 0); }
+  if (innerHeight - view.h * view.k > 3) { edge(0, 0, 0, chh * 0.05); edge(0, chh, 0, chh * 0.95); }
+}
+const puff = (n, x0, x1, y0, y1, r, a, life, vy) => { for (let i = 0; i < n; i++) dust.push({ x: x0 + (x1 - x0) * (i + 0.5 * lr()) / n, y: y0 + (y1 - y0) * lr(), vx: 30 * (lr() - 0.5), vy: vy * (0.5 + lr()), r: r * (0.6 + 0.8 * lr()), a: a * (0.6 + 0.4 * lr()), life: life * (0.7 + 0.6 * lr()), t: 0 }); };
+function frame(t) {
+  const dt = Math.min(0.05, (t - last) / 1000 || 0); last = t; acc += dt; clock += dt;
+  if (s.phase === 'fall' && !endReady && s.endT > FALL.w0 - 0.2) s.endT = FALL.w0 - 0.2;      // the wall waits for its pictures
+  while (acc >= SIM.T.dt) { SIM.step(s); acc -= SIM.T.dt; }
+  let changed = false, pops = 0;
+  for (const e of s.events.splice(0)) {
+    if (e === 'throw') SND.throw();
+    if (e === 'ring') { ringVel = 9; SND.ring(); changed = true; say('Through the ring. The lights are on.'); }
+    if (e === 'ringAgain') { ringVel = 9; SND.ring(); }
+    if (e === 'board') { flash = 1; boardV = 6; SND.board(); }
+    if (e.startsWith('loosen')) { SND.creak(); puff(3, 120, 660, 150, 190, 26, 0.16, 1.4, 40); say('The surfboard is coming loose.'); }
+    if (e === 'crook') { SND.crook(); changed = true; shake = 4; puff(6, 380, 760, 150, 230, 34, 0.2, 1.6, 50); say('The surfboard has dropped off its rack.'); }
+    if (e.startsWith('pop')) { setTimeout(SND.pop, 90 * pops++); changed = true; say('A bulb is out.'); }
+    if (e === 'night') say('Every bulb is out. It is night, and the sea is glowing.');
+    if (e === 'smash') { SND.smash(); lanV = 3; changed = true; say('The lantern is smashed.'); }
+    if (e === 'lanternTap') { lanV = 2 * Math.sign(s.ball.vx || 1); SND.tink(); }
+    if (e.startsWith('crack')) { lanV = 2.4 * Math.sign(s.ball.vx || 1); SND.crack(); changed = true; say('The lantern has cracked.'); }
+    if (e === 'bucket') { dipV = 1.3; SND.bucket(); changed = true; say('In the bucket. The lantern is lit and the cooler is open.'); }
+    if (e === 'bucketAgain') { dipV = 1.3; SND.bucket(); }
+    if (e === 'cooler') { SND.cooler(); boardV = 9; changed = true; say('In the cooler. The ring is swinging and the surfboard is hanging by a thread.'); }
+    if (e === 'coolerAgain') SND.lid();
+    if (e === 'lidShut') SND.lid();
+    if (e === 'rim') SND.rim();
+    if (e === 'bowl' || e === 'unstuck') SND.bowl();
+    if (e === 'kick') { SND.kick(); bowlT = 0; }
+    if (e === 'boing') { dipV = -1.6; SND.boing(); }
+    if (e === 'fling') SND.fling();
+    if (e === 'drink') { SND.plunk(); splash = 1; say('Into the drink.'); }
+    if (e === 'fall') { fallStage = 0; say('That is everything. The surfboard is letting go, and the wall is going with it.'); try { localStorage.removeItem(KEY_); } catch (e2) {} }
+  }
+  if (changed && s.phase === 'play') save();
+  // the ending's moments, each once
+  if (s.phase === 'fall') { const E = s.endT, at = (n, when, f) => { if (fallStage === n && E >= when) { fallStage++; f(); } };
+    at(0, FALL.b0, () => SND.creak());
+    at(1, FALL.b1, () => { SND.thud(); shake = 7; puff(9, 90, 700, 800, 850, 46, 0.3, 1.5, -30); });
+    at(2, FALL.w0 - 0.25, () => SND.groan());
+    at(3, FALL.w1, () => { SND.crash(); shake = 20; puff(30, -520, 1300, 880, 1060, 150, 0.55, 2.6, -46); puff(14, -300, 1100, 760, 900, 110, 0.4, 3.2, -30); if (ac) { seaGain.gain.setTargetAtTime(2.0, ac.currentTime, 1.5); roomGain.gain.setTargetAtTime(0.08, ac.currentTime, 1); } });
+    at(4, FALL.note, () => {
+      // Honor system (docs/brand/DIRECTION.md): the code is made here, in the browser, from the clock. It is not checked, not stored and not
+      // sent anywhere. Jamey answers these by hand. Real codes and verification are a later decision.
+      const A = 'ACDEFGHJKLMNPQRTUVWXY34679'; let x = (Date.now() ^ (performance.now() * 1000)) >>> 0, code = ''; for (let i = 0; i < 4; i++) { x = (x * 1664525 + 1013904223) >>> 0; code += A[x % A.length]; }
+      note.innerHTML = '<span style="font:500 11px system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#9e4827">You wrecked the bar</span><br>Email us for a prize<br><a href="mailto:aloha@kahak.ai?subject=KAI-' + code + '">aloha@kahak.ai</a><br><span style="font:600 20px ui-monospace,Menlo,monospace;letter-spacing:.08em;color:#326b63">KAI-' + code + '</span>';
+      note.style.display = 'block'; SND.tink(); say('You wrecked the bar. Email aloha@kahak.ai for a prize, with the code KAI-' + code.split('').join(' ') + '.'); });
+    if (still && fallStage < 4) { if (fallStage < 3 && E > 0.2) { SND.crash(); fallStage = 4; } } }
+  const big = SIM.big(s); for (let i = 0; i < 5; i++) shell[i] = Math.max(0, Math.min(1, shell[i] + (big[i] ? 1 : -1) * dt * 2));
+  let nLit = 0; for (let i = 0; i < 8; i++) if (s.alive[i] && s.lights) nLit++;
+  const k = Math.min(1, dt / (still ? 0.1 : 0.45)), toward = (a, b, kk) => a + (b - a) * (kk || k);
+  lightA = toward(lightA, nLit / 8); lanternA = toward(lanternA, s.bucket && !s.smashed ? 1 : 0); lidA = toward(lidA, s.bucket && !(s.hold && s.hold.kind === 'cooler' && s.hold.t < 0.55) ? 1 : 0, Math.min(1, dt / 0.07)); nightA = toward(nightA, SIM.night(s) ? 1 : 0); crookA = toward(crookA, s.crooked ? 1 : 0);
+  flash = Math.max(0, flash - dt * 4); splash = Math.max(0, splash - dt * 1.5); shake *= Math.exp(-4.5 * dt);
+  for (const d of dust) { d.t += dt; d.x += d.vx * dt; d.y += d.vy * dt; d.vy *= Math.exp(-1.2 * dt); } if (dust.length && dust[0].t > dust[0].life) dust = dust.filter(d => d.t < d.life);
+  if (!still) { ringSpin += ringVel * dt; ringVel *= Math.exp(-1.6 * dt); dipV += (-140 * dip - 9 * dipV) * dt; dip += dipV * dt * 0.06; bowlT += dt; bowlJ = bowlT < 1 ? -15 * Math.exp(-7 * bowlT) * Math.sin(24 * bowlT) : 0;      // the bowl jumps as it kicks
+    lanV += (-14 * lanA - 1.2 * lanV) * dt; lanA += lanV * dt * 0.3; boardV += (-420 * boardJ - 7 * boardV) * dt; boardJ += boardV * dt;
+    // a gull across the window now and then; a shooting star once the sky is open
+    if (gull) { gull.t += dt; if (gull.t > gull.d) gull = null; } else if (s.phase === 'play' && clock > gullAt) { gull = { t: 0, d: 6 + 3 * lr(), y: 500 + 70 * lr(), dir: lr() > 0.5 ? 1 : -1, sz: lr() }; gullAt = clock + 16 + 20 * lr(); SND.gull(); }
+    if (star) { star.t += dt; if (star.t > 0.9) star = null; } else if (s.phase === 'fall' && s.endT > FALL.f1 + 2 && clock > starAt) { star = { t: 0, x: -OX + 200 + (MW - 500) * lr(), y: -OY + 40 + 200 * lr(), dx: 240 + 160 * lr(), dy: 90 + 60 * lr() }; starAt = clock + 9 + 14 * lr(); } }
+  draw(t); if (!document.hidden) requestAnimationFrame(frame);
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { last = performance.now(); requestAnimationFrame(frame); } });
+function start() { stage.classList.add('in'); last = performance.now(); requestAnimationFrame(frame); }
+window.__shore = { state: () => s, set: f => f(s), press, SIM, snd: SND, view: () => view, ready: () => endReady, again };
+</script>
 </body>
 </html>
